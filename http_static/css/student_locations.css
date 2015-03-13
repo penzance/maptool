@@ -1,0 +1,32 @@
+div.add_user_form { 
+  margin-left: 10px; 
+  margin-top: 10px; 
+  max-width: 80%;
+}
+.location-box { 
+  border: thin solid lightgrey; 
+  margin: 10px 10px; 
+  padding: 10px 10px;
+}
+.text-box { 
+  margin: 10px 10px; 
+  padding: 10px 10px;
+}
+
+#table-view {
+  margin: 10px 10px; 
+  padding: 10px 10px;
+}
+
+legend { 
+  border-bottom: 0; 
+}
+
+div#map, div#maplocal {
+    margin-bottom: 15px;
+    border: thin solid black;
+}
+div#data_url { display: none; }
+
+div#content-div { margin-left: 10px; margin-top: 10px; }
+

@@ -1,0 +1,58 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>LTI Student Locations Map View</title>
+
+{% block stylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
+<style type="text/css">
+    div#map, div#maplocal {
+        margin-bottom: 15px;
+        border: thin solid black;
+    }
+    div#data_url { display: none; }
+    div#content-div { margin-left: 10px; margin-top: 10px; }
+    .text-box { margin: 10px 10px; padding: 10px 10px;}
+</style>
+{% endblock %}
+
+</head>
+<body>
+
+{% block content %}
+<div id="content-div" class="row-fluid">
+    <p>
+        <a href="{% url 'maptoolapp:user_edit_view' %}">Edit My Information</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:main' %}">View Map</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:table_view' %}">View Table</a>
+    </p>
+
+    <p class="help-block">World view:</p>
+    <div id="map" style="margin: 20px; width: 600px; height: 400px; ">&#160;</div>
+
+    <p class="help-block">Boston Area view:</p>
+    <div id="maplocal" style="margin: 20px; width: 600px; height: 550px;">&#160;</div>
+
+    <div id="data_url">{% url 'maptoolapp:markers_class_xml' %}</div>
+    
+    <table>
+        {% for key, val in lti_launch %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{{ val }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&sensor=false"></script>
+<script src="{% static "js/student_locations.js" %}"></script>
+{% endblock %}
+
+</body>
+</html>
