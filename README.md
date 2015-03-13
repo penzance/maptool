@@ -1,4 +1,4 @@
-# boostrap_lti
+# Maptool App
 
 Quick Start
 ```
@@ -18,3 +18,11 @@ now open a browser and enter:
 https://localhost:8000/lti_tools/maptoolapp/tool_config
 
 ```
+
+This project also contains the basic_lti_app application.
+You can install this app using this url:
+```
+https://localhost:8000/lti_tools/basic_lti_app/tool_config
+```
+
+
