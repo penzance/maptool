@@ -28,6 +28,9 @@ def validaterequiredltiparams(request):
     
 
 def getparamfromsession(request, param):
+    """
+    get the LTI param from the session
+    """
     lti_launch = request.session.get('LTI_LAUNCH')
     return lti_launch.get(param)
 
