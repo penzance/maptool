@@ -7,6 +7,8 @@ from django.core.validators import validate_email, MaxValueValidator, MinValueVa
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from maptoolapp.utils import getlatlongfromurl
+from maptoolapp.utils import getparamfromsession
+from django.contrib.admin import widgets 
 import urllib
 import urllib2
 import urlparse
@@ -17,12 +19,19 @@ from models import Locations
 import logging
 logger = logging.getLogger(__name__)
 
+"""
+def student_name(request):
+    lti_params_dict = request.session.get('LTI_LAUNCH', {})
+    lis_person_name_given = lti_params_dict.get('lis_person_name_given')
+    lis_person_name_family = lti_params_dict.get('lis_person_name_family')
+    return {'list_person_name_given': lis_person_name_given, 'lis_person_name_family': lis_person_name_family}
+"""
 
 class StudentLocationForm(forms.ModelForm):
 
     class Meta:
         model = Locations
-        exclude = ['user_id', 'method', 'generated_latitude', 'generated_longitude', 'locality', 'region', 'resource_link_id', 'country']
+        exclude = ['user_id', 'method', 'generated_latitude', 'generated_longitude', 'locality', 'region', 'resource_link_id', 'country', 'context_id', 'custom_canvas_course_id', 'datetime']
 
 
     user_id = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -32,51 +41,37 @@ class StudentLocationForm(forms.ModelForm):
     country = forms.CharField(required=False, widget=forms.HiddenInput())
     generated_longitude = forms.CharField(required=False, widget=forms.HiddenInput())
     generated_latitude = forms.CharField(required=False, widget=forms.HiddenInput())
+    context_id = forms.CharField(required=False, widget=forms.HiddenInput())
+    custom_canvas_course_id = forms.CharField(required=False, widget=forms.HiddenInput())
+    method = forms.CharField(required=False, widget=forms.HiddenInput())
+    datetime = forms.CharField(required=False, widget=forms.HiddenInput())
+    first_name = forms.CharField(required=False, widget=forms.HiddenInput())
+    last_name = forms.CharField(required=False, widget=forms.HiddenInput())
 
-    first_name = forms.CharField(
-        label="First Name",
-        max_length=60,
-        required=True,
-    )
 
     first_name_permission = forms.BooleanField(
-        label="Display to class members",
+        label="Check if your first name can be displayed to all class members",
         initial=True,
         required=False,
-    )
-
-    last_name = forms.CharField(
-        label="Last Name",
-        max_length=60,
-        required=True,
     )
 
     last_name_permission = forms.BooleanField(
-        label="Display to class members",
+        label="Check if your last name can be displayed to all class members",
         initial=True,
         required=False,
     )
 
-    email = forms.EmailField()
-
-    email_permission = forms.BooleanField(
-        label="Display to class members",
-        initial=True,
-        required=False,
+    title = forms.CharField(
+    label="Location Name",
+    max_length=60,
+    required=True,
     )
 
-    organization = forms.CharField(
-        label="Company or Organization",
-        max_length=60,
-        required=False,
+    info = forms.CharField(
+    label="Location Information",
+    max_length=250,
+    required=True,
     )
-
-    organization_permission = forms.BooleanField(
-        label="Display to class members",
-        initial=True,
-        required=False,
-    )
-
 
     address = forms.CharField(
         label="Address",
@@ -104,26 +99,23 @@ class StudentLocationForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.render_unmentioned_fields = True
         self.helper.form_action = 'addoredituser'
-        self.helper.form_error_title = u"There were problems with the information you submitted."        
+        self.helper.form_error_title = u"There were problems with the information you submitted."
+        # self.fields['lis_person_name_given'].initial = student_name(request)
+        # self.fields['lis_person_name_family'].initial = student_name(request)
         
         self.helper.layout = Layout(
             Div(
             HTML("""
                 <p class="help-block">
-            Your location may, but need not pin-point your home or work --
-            pick something in the general area of where you are; perhaps a
-            favorite park, recreation spot, or restaurant, or the
-           'geographic' center of the town in which you live or work.
+            Ente
           </p>
           """)
             , css_class="text-box"),
             Div(
             Fieldset(
                 'Information about You',
-                'first_name', 'first_name_permission',
-                'last_name', 'last_name_permission',
-                'email', 'email_permission',
-                'organization', 'organization_permission',
+                'first_name_permission',
+                'last_name_permission',
             )
             , css_class="location-box"),
             
@@ -142,6 +134,18 @@ class StudentLocationForm(forms.ModelForm):
                 town.</p>
                 """)
             , css_class="text-box"),
+            Div(
+                Fieldset(
+                    'Title',
+                    'title',
+                    'Location Information',
+                    'info'
+                ),
+                HTML("""
+                    <p class="help-block">
+                        Provide a clear title for the landmark and a brief description of the location.
+                    """)
+                , css_class="location-box"),
             Div(
                 Fieldset(
                     'Address',
@@ -184,7 +188,7 @@ class StudentLocationForm(forms.ModelForm):
             , css_class="location-box"),
             Div(
             FormActions(
-                Submit('save', 'Save changes', css_class='btn-primary'),
+                Submit('save', 'Save new location', css_class='btn-primary'),
                 Button('cancel', 'Cancel')
                 
             )
@@ -198,6 +202,8 @@ class StudentLocationForm(forms.ModelForm):
         address = cleaned_data.get('address') 
         latitude = cleaned_data.get('latitude') 
         longitude = cleaned_data.get('longitude')
+        info = cleaned_data.get('info')
+        title = cleaned_data.get('title')
         mapurl = cleaned_data.get('mapurl')
 
         if len(address) > 0 and address != 'None':
@@ -340,7 +346,3 @@ class StudentLocationForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
-
-
-                    
-

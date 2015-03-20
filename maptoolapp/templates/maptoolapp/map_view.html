@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>LTI Student Locations Map View</title>
+<title>LTI Map App</title>
 
 {% block stylesheet %}
 <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
@@ -23,7 +23,7 @@
 {% block content %}
 <div id="content-div" class="row-fluid">
     <p>
-        <a href="{% url 'maptoolapp:user_edit_view' %}">Edit My Information</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:add_location' %}">Add Location</a>&#160;|&#160;
         <a href="{% url 'maptoolapp:main' %}">View Map</a>&#160;|&#160;
         <a href="{% url 'maptoolapp:table_view' %}">View Table</a>
     </p>
