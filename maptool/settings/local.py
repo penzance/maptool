@@ -9,8 +9,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS += ('debug_toolbar', 'sslserver')
 
-MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)# For Django Debug Toolbar:
+MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
+# For Django Debug Toolbar:
 INTERNAL_IPS = ('127.0.0.1', '10.0.2.2',)
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -56,7 +57,13 @@ LOGGING = {
            'class': 'logging.handlers.WatchedFileHandler',
            'filename': 'request.log',
            'formatter': 'verbose',
+<<<<<<< HEAD
        },    },
+=======
+       },
+
+   },
+>>>>>>> jamescurtin-master
    'loggers': {
        'django.request': {
            'handlers': ['request'],
@@ -68,7 +75,11 @@ LOGGING = {
            'level': 'DEBUG',
            'propagate': True,
        },
+<<<<<<< HEAD
        'mapptoolapp': {
+=======
+       'maptoolapp': {
+>>>>>>> jamescurtin-master
            'handlers': ['console', 'logfile'],
            'level': 'DEBUG',
            'propagate': True,
@@ -89,4 +100,8 @@ LOGGING = {
            'propagate': True,
        },
    }
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> jamescurtin-master
