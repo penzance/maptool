@@ -8,15 +8,7 @@
                 {% if rec.last_name_permission %}{{ rec.last_name  }}{% endif %}
             </strong>
             <br/>
-            {% if rec.email_permission %} 
-                <a href="mailto:{{ rec.email }}">{{ rec.email }}</a>
-            {% endif %}
-            <br/>
-            {% if rec.organization_permission %} 
-                {{ rec.organization  }} 
-            {% endif %}
-            <br />
-            {{ rec.locality }}, {{ rec.region }}, {{ rec.country }} 
+            {{ title }}, {{ info }}
             <br />
         </content>
     </marker>
