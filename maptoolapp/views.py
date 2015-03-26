@@ -6,8 +6,8 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from maptoolapp.forms import StudentLocationForm
-from maptoolapp.models import Locations
+from maptoolapp.forms import LocationForm, ItemGroupForm, UrlForm
+from maptoolapp.models import Locations, ItemGroup, Urls
 from maptoolapp.utils import (validaterequiredltiparams, getparamfromsession)
 import datetime 
 
@@ -68,41 +68,43 @@ def add_location(request):
         student = None
 
     if student:
-        form = StudentLocationForm(instance=student)
+        form = LocationForm(instance=student)
     else:
     """
-    form = StudentLocationForm()
+    locationform = LocationForm
 
-    return render(request, 'maptoolapp/add_location.html', {'request': request, 'form': form})
+    return render(request, 'maptoolapp/add_location.html', {'request': request, 'locationform': locationform})
 
 @login_required()
 def addoredituser(request):
     """
     The action method for the user_edit_view form.
     """
-    resource_link_id = getparamfromsession(request, 'resource_link_id')
     user_id = getparamfromsession(request, 'user_id')
-    context_id = getparamfromsession(request, 'context_id')
-    custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_id')
     lis_person_name_family = getparamfromsession(request, 'lis_person_name_family')
     lis_person_name_given = getparamfromsession(request, 'lis_person_name_given')
 
-    form = StudentLocationForm(user_id=user_id, resource_link_id=resource_link_id, data=request.POST)
+    try:
+        location = Locations.objects.get(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=user_id)
+    except Locations.DoesNotExist:
+        location = None
 
-    if form.is_valid():
-        theform = form.save(commit=False)
-        theform.user_id = user_id
-        theform.resource_link_id = resource_link_id
-        theform.context_id = context_id
-        theform.custom_canvas_course_id = custom_canvas_course_id
-        theform.last_name = lis_person_name_family
+    if location:
+        locationform = LocationForm(instance=location, first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=user_id, data=request.POST)
+    else:
+        logger.debug('Location is None')
+        locationform = LocationForm(data=request.POST)
+
+    if locationform.is_valid():
+        theform = locationform.save(commit=False)
         theform.first_name = lis_person_name_given
-        theform.datetime = datetime.datetime.now()
+        theform.last_name = lis_person_name_family
+        theform.user_id = user_id
         theform.save()
         key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
         return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key' : key})
     else:
-        return render(request, 'maptoolapp/user_edit_view.html', {'request': request, 'form': form})
+        return render(request, 'maptoolapp/user_edit_view.html', {'request': request, 'locationform': locationform})
 
 @login_required()
 @require_http_methods(['GET'])

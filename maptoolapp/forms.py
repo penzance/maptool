@@ -14,52 +14,85 @@ import urllib2
 import urlparse
 import json
 from django.forms import ModelForm
-from models import Locations
+from models import Locations, Urls, ItemGroup
 
 import logging
 logger = logging.getLogger(__name__)
 
-"""
-def student_name(request):
-    lti_params_dict = request.session.get('LTI_LAUNCH', {})
-    lis_person_name_given = lti_params_dict.get('lis_person_name_given')
-    lis_person_name_family = lti_params_dict.get('lis_person_name_family')
-    return {'list_person_name_given': lis_person_name_given, 'lis_person_name_family': lis_person_name_family}
-"""
+class ItemGroupForm(forms.ModelForm):
 
-class StudentLocationForm(forms.ModelForm):
+    class Meta:
+        model = ItemGroup
+        exclude = ['resource_link_id', 'context_id', 'custom_canvas_course_id']
+
+
+    resource_link_id = forms.CharField(required=False, widget=forms.HiddenInput())
+    context_id = forms.CharField(required=False, widget=forms.HiddenInput())
+    custom_canvas_course_id = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    item_name = forms.CharField(
+    label="Enter the title of this view.",
+    max_length=50,
+    required=True,
+    )
+
+    item_description = forms.CharField(
+    widget = forms.Textarea,
+    label="Enter a description for this view.",
+    required=True,
+    )
+
+    def __init__(self, user_id=None, resource_link_id=None, *args, **kwargs):
+        super(LocationForm, self).__init__(*args, **kwargs)
+        self._resource_link_id = resource_link_id
+
+class UrlForm(forms.ModelForm):
+
+        class Meta:
+            model = Urls
+            exclude = ['itemgroup']
+
+        itemgroup = forms.CharField(required=False, widget=forms.HiddenInput())
+
+        url_1 = forms.CharField(
+        label="Add the Google Maps URL of the first display you want. (Leave blank for a world map)",
+        max_length=50,
+        initial='http://www.maps.google.com',
+        required=False,
+        )
+
+        url_2 = forms.CharField(
+        label="OPTIONAL Add the Google Maps URL of the second display you want.",
+        max_length=50,
+        required=False,
+        )
+
+        url_3 = forms.CharField(
+        label="OPTIONAL Add the Google Maps URL of the third display you want.",
+        max_length=50,
+        required=False,
+        )
+
+class LocationForm(forms.ModelForm):
 
     class Meta:
         model = Locations
-        exclude = ['user_id', 'method', 'generated_latitude', 'generated_longitude', 'locality', 'region', 'resource_link_id', 'country', 'context_id', 'custom_canvas_course_id', 'datetime']
 
+        model = Locations
+        exclude = ['method', 'generated_latitude', 'generated_longitude', 'locality', 'region', 'country', 'datetime', 'itemgroup', 'user_id', 'first_name', 'last_name']
 
-    user_id = forms.CharField(required=False, widget=forms.HiddenInput())
-    resource_link_id = forms.CharField(required=False, widget=forms.HiddenInput())
     locality = forms.CharField(required=False, widget=forms.HiddenInput())
     region = forms.CharField(required=False, widget=forms.HiddenInput())
     country = forms.CharField(required=False, widget=forms.HiddenInput())
     generated_longitude = forms.CharField(required=False, widget=forms.HiddenInput())
     generated_latitude = forms.CharField(required=False, widget=forms.HiddenInput())
-    context_id = forms.CharField(required=False, widget=forms.HiddenInput())
-    custom_canvas_course_id = forms.CharField(required=False, widget=forms.HiddenInput())
     method = forms.CharField(required=False, widget=forms.HiddenInput())
     datetime = forms.CharField(required=False, widget=forms.HiddenInput())
     first_name = forms.CharField(required=False, widget=forms.HiddenInput())
     last_name = forms.CharField(required=False, widget=forms.HiddenInput())
-
-
-    first_name_permission = forms.BooleanField(
-        label="Check if your first name can be displayed to all class members",
-        initial=True,
-        required=False,
-    )
-
-    last_name_permission = forms.BooleanField(
-        label="Check if your last name can be displayed to all class members",
-        initial=True,
-        required=False,
-    )
+    #TODO
+    # itemgroup = forms.CharField(required=False, widget=forms.HiddenInput())
+    user_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
     title = forms.CharField(
     label="Location Name",
@@ -81,16 +114,15 @@ class StudentLocationForm(forms.ModelForm):
   
     latitude = forms.CharField(label="Latitude", required=False)
     longitude = forms.CharField(label="Longitude", required=False)
+
     mapurl = forms.CharField(
         label="Google Map URL",
         max_length=200,
         required=False,
     )
 
-    def __init__(self, user_id=None, resource_link_id=None, *args, **kwargs):
-        super(StudentLocationForm, self).__init__(*args, **kwargs)
-        self._user_id = user_id
-        self._resource_link_id = resource_link_id
+    def __init__(self, *args, **kwargs):
+        super(LocationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
@@ -100,25 +132,8 @@ class StudentLocationForm(forms.ModelForm):
         self.helper.render_unmentioned_fields = True
         self.helper.form_action = 'addoredituser'
         self.helper.form_error_title = u"There were problems with the information you submitted."
-        # self.fields['lis_person_name_given'].initial = student_name(request)
-        # self.fields['lis_person_name_family'].initial = student_name(request)
         
         self.helper.layout = Layout(
-            Div(
-            HTML("""
-                <p class="help-block">
-            Ente
-          </p>
-          """)
-            , css_class="text-box"),
-            Div(
-            Fieldset(
-                'Information about You',
-                'first_name_permission',
-                'last_name_permission',
-            )
-            , css_class="location-box"),
-            
             Div(
             HTML("""
                 <h3>Location</h3>
@@ -196,9 +211,10 @@ class StudentLocationForm(forms.ModelForm):
         )
         
 
+    @property
     def clean(self):
 
-        cleaned_data = super(StudentLocationForm, self).clean()
+        cleaned_data = super(LocationForm, self).clean()
         address = cleaned_data.get('address') 
         latitude = cleaned_data.get('latitude') 
         longitude = cleaned_data.get('longitude')
@@ -254,7 +270,7 @@ class StudentLocationForm(forms.ModelForm):
                 self._errors["mapurl"] = self.error_class([msg])
                 raise forms.ValidationError(msg)
             except Exception as e:
-                print '%s' % e
+                print('%s' % e)
                 msg = u"Exception map url"
                 self._errors["mapurl"] = self.error_class([msg])
                 raise forms.ValidationError(msg)
@@ -323,8 +339,7 @@ class StudentLocationForm(forms.ModelForm):
                 if component['types'][0] == 'administrative_area_level_1':
                     cleaned_data['region'] = component.get('short_name')
 
-        cleaned_data['user_id'] = self._user_id
-        cleaned_data['resource_link_id'] = self._resource_link_id
+#        cleaned_data['user_id'] = self._user_id
 
         #for key,value in cleaned_data.items():
         #    logger.debug('Key: '+key+', Value='+str(value))
@@ -334,7 +349,7 @@ class StudentLocationForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True, *args, **kwargs):
-        instance = super(StudentLocationForm, self).save(commit=False, *args, **kwargs)
+        instance = super(LocationForm, self).save(commit=False, *args, **kwargs)
 
         cleaned_data = self.cleaned_data
         instance.generated_latitude = cleaned_data['generated_latitude']
