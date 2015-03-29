@@ -9,9 +9,9 @@ from django.http import HttpResponse
 from maptoolapp.forms import LocationForm, ItemGroupForm, UrlForm
 from maptoolapp.models import Locations, ItemGroup, Urls
 from maptoolapp.utils import (validaterequiredltiparams, getparamfromsession)
-import datetime 
+import datetime
 
-import logging 
+import logging
 
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def lti_launch(request):
     if request.user.is_authenticated():
         if validaterequiredltiparams(request):
             return redirect('maptoolapp:main')
-        else: 
+        else:
             return render(request, 'maptoolapp/error.html', {'message': 'Error: The LTI parameter lis_course_offering_sourcedid is required by this LTI tool.'})
     else:
         return render(request, 'maptoolapp/error.html', {'message': 'Error: user is not authenticated!'})
@@ -80,26 +80,26 @@ def addoredituser(request):
     """
     The action method for the user_edit_view form.
     """
-    user_id = getparamfromsession(request, 'user_id')
+    enter_user_id = getparamfromsession(request, 'user_id')
     lis_person_name_family = getparamfromsession(request, 'lis_person_name_family')
     lis_person_name_given = getparamfromsession(request, 'lis_person_name_given')
 
-    try:
-        location = Locations.objects.get(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=user_id)
-    except Locations.DoesNotExist:
-        location = None
-
-    if location:
-        locationform = LocationForm(instance=location, first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=user_id, data=request.POST)
-    else:
-        logger.debug('Location is None')
-        locationform = LocationForm(data=request.POST)
+    # try:
+    #     location = Locations.objects.get(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=user_id)
+    # except Locations.DoesNotExist:
+    #     location = None
+    #
+    # if location:
+    #     locationform = LocationForm(instance=location, first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=user_id, data=request.POST)
+    # else:
+    #     logger.debug('Location is None')
+    locationform = LocationForm(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=enter_user_id, data=request.POST)
 
     if locationform.is_valid():
         theform = locationform.save(commit=False)
         theform.first_name = lis_person_name_given
         theform.last_name = lis_person_name_family
-        theform.user_id = user_id
+        theform.user_id = enter_user_id
         theform.save()
         key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
         return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key' : key})
@@ -113,8 +113,8 @@ def table_view(request):
     renders the data and display of the table view of students
     """
     resource_link_id = getparamfromsession(request, 'resource_link_id')
-    select_context_id = getparamfromsession(request, 'context_id')
-    students = Locations.objects.filter(context_id=select_context_id)
+    select_itemgroup_id = getparamfromsession(request, 'itemgroup_id')
+    students = Locations.objects.filter(itemgroup_id=select_itemgroup_id)
     return render(request, 'maptoolapp/table_view.html', {'request': request, 'data' : students})
 
 @login_required()
@@ -128,7 +128,7 @@ def markers_class_xml(request):
     students = Locations.objects.filter(context_id=select_context_id)
     return render_to_response('maptoolapp/markers.xml',
                           {'data' : students},
-                          context_instance=RequestContext(request)) 
+                          context_instance=RequestContext(request))
 
 @require_http_methods(['GET'])
 def tool_config(request):
