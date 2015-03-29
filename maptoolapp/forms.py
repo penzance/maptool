@@ -121,8 +121,11 @@ class LocationForm(forms.ModelForm):
         required=False,
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, first_name=None, last_name=None, user_id=None, *args, **kwargs):
         super(LocationForm, self).__init__(*args, **kwargs)
+        self.first_name = first_name
+        self.last_name = last_name
+        self.user_id = user_id
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
@@ -339,8 +342,10 @@ class LocationForm(forms.ModelForm):
                 if component['types'][0] == 'administrative_area_level_1':
                     cleaned_data['region'] = component.get('short_name')
 
-#        cleaned_data['user_id'] = self._user_id
-
+        #cleaned_data['user_id'] = self._user_id
+        #cleaned_data['itemgroup_id'] = self._itemgroup_id
+        #cleaned_data['title'] = self._title
+        #cleaned_data['info'] = self._info
         #for key,value in cleaned_data.items():
         #    logger.debug('Key: '+key+', Value='+str(value))
 
@@ -349,6 +354,7 @@ class LocationForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True, *args, **kwargs):
+        logger.debug("save initiated")
         instance = super(LocationForm, self).save(commit=False, *args, **kwargs)
 
         cleaned_data = self.cleaned_data
