@@ -20,11 +20,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ItemGroupForm(forms.ModelForm):
-
     class Meta:
         model = ItemGroup
         exclude = ['resource_link_id', 'context_id', 'custom_canvas_course_id']
-
 
     resource_link_id = forms.CharField(required=False, widget=forms.HiddenInput())
     context_id = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -37,27 +35,59 @@ class ItemGroupForm(forms.ModelForm):
     )
 
     item_description = forms.CharField(
-    widget = forms.Textarea,
     label="Enter a description for this view.",
+    max_length=250,
     required=True,
     )
 
-    def __init__(self, user_id=None, resource_link_id=None, *args, **kwargs):
-        super(LocationForm, self).__init__(*args, **kwargs)
+    def __init__(self, context_id=None, custom_canvas_course_id=None, resource_link_id=None, *args, **kwargs):
+        super(ItemGroupForm, self).__init__(*args, **kwargs)
+        self._context_id = context_id
+        self._custom_canvas_course_id = custom_canvas_course_id
         self._resource_link_id = resource_link_id
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+        self.helper.form_method = 'post'
+        self.helper.help_text_inline = True
+        self.helper.render_unmentioned_fields = True
+        self.helper.form_action = 'toolinstanceconfig'
+        self.helper.form_error_title = u"There were problems with the information you submitted."
+        self.helper.layout = Layout(
+            Div(
+            HTML("""
+                <h3>Tool Instance Configuration</h3>
+                <p class="help-block">Please fill in the following information about the view you would like to create.
+                You must give the view a title and short description. You may provide up to three URLs to Google Maps
+                centered on various regions you would like to display. If you do not choose to enter any URLs, the
+                world map will be selected by default.</p>
+                """)
+            , css_class="text-box"),
+            Div(
+                Fieldset(
+                    'Create a new view',
+                    'item_name',
+                    'item_description'
+                ),
+                css_class="location-box"),
+         )
 
 class UrlForm(forms.ModelForm):
-
         class Meta:
             model = Urls
             exclude = ['itemgroup']
-
-        itemgroup = forms.CharField(required=False, widget=forms.HiddenInput())
 
         url_1 = forms.CharField(
         label="Add the Google Maps URL of the first display you want. (Leave blank for a world map)",
         max_length=50,
         initial='http://www.maps.google.com',
+        required=True,
+        )
+
+        description_1 = forms.CharField(
+        label="Add a description for your first view",
+        max_length=250,
         required=False,
         )
 
@@ -67,17 +97,58 @@ class UrlForm(forms.ModelForm):
         required=False,
         )
 
+        description_2 = forms.CharField(
+        label="Add a description for your second view",
+        max_length=250,
+        required=False,
+        )
+
         url_3 = forms.CharField(
         label="OPTIONAL Add the Google Maps URL of the third display you want.",
         max_length=50,
         required=False,
         )
 
+        description_3 = forms.CharField(
+        label="Add a description for your third view",
+        max_length=250,
+        required=False,
+        )
+
+        def __init__(self, *args, **kwargs):
+            super(UrlForm, self).__init__(*args, **kwargs)
+            self.helper = FormHelper(self)
+            self.helper.form_class = 'form-horizontal'
+            self.helper.label_class = 'col-lg-2'
+            self.helper.field_class = 'col-lg-8'
+            self.helper.form_method = 'get'
+            self.helper.help_text_inline = True
+            self.helper.render_unmentioned_fields = True
+            self.helper.form_action = 'toolinstanceconfig'
+            self.helper.form_error_title = u"There were problems with the information you submitted."
+            self.helper.layout = Layout(
+                Div(
+                    Fieldset(
+                        'Links to Google Maps URLs',
+                        'url_1',
+                        'description_1',
+                        'url_2',
+                        'description_2',
+                        'url_3',
+                        'description_3'
+                    ),
+                    css_class="location-box"),
+                 Div(
+                 FormActions(
+                     Submit('saveitemgroup', 'Save new view', css_class='btn-primary'),
+                     Button('cancel', 'Cancel')
+
+                 )
+                 , css_class="text-box")
+             )
+
 class LocationForm(forms.ModelForm):
-
     class Meta:
-        model = Locations
-
         model = Locations
         exclude = ['method', 'generated_latitude', 'generated_longitude', 'locality', 'region', 'country', 'datetime', 'itemgroup', 'user_id', 'first_name', 'last_name']
 
@@ -90,20 +161,18 @@ class LocationForm(forms.ModelForm):
     datetime = forms.CharField(required=False, widget=forms.HiddenInput())
     first_name = forms.CharField(required=False, widget=forms.HiddenInput())
     last_name = forms.CharField(required=False, widget=forms.HiddenInput())
-    #TODO
-    # itemgroup = forms.CharField(required=False, widget=forms.HiddenInput())
     user_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
     title = forms.CharField(
-    label="Location Name",
-    max_length=60,
-    required=True,
+        label="Location Name",
+        max_length=60,
+        required=True,
     )
 
     info = forms.CharField(
-    label="Location Information",
-    max_length=250,
-    required=True,
+        label="Location Information",
+        max_length=50,
+        required=True,
     )
 
     address = forms.CharField(
@@ -123,9 +192,9 @@ class LocationForm(forms.ModelForm):
 
     def __init__(self, first_name=None, last_name=None, user_id=None, *args, **kwargs):
         super(LocationForm, self).__init__(*args, **kwargs)
-        self.first_name = first_name
-        self.last_name = last_name
-        self.user_id = user_id
+        self._first_name = first_name
+        self._last_name = last_name
+        self._user_id = user_id
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
@@ -133,9 +202,8 @@ class LocationForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.help_text_inline = True
         self.helper.render_unmentioned_fields = True
-        self.helper.form_action = 'addoredituser'
+        self.helper.form_action = 'addoreditlocation'
         self.helper.form_error_title = u"There were problems with the information you submitted."
-        
         self.helper.layout = Layout(
             Div(
             HTML("""
@@ -171,7 +239,7 @@ class LocationForm(forms.ModelForm):
                 ),
                 HTML("""
                     <p class="help-block">
-                        Street (optional), City, State, Country 
+                        Street (optional), City, State, Country
                         e.g. "1 Oxford St, Cambridge, MA", "Lawrence, KS" or
                         "Paris, France"</p>
                     """)
@@ -201,28 +269,26 @@ class LocationForm(forms.ModelForm):
                             <li>Click on "Link to this page"</li>
                             <li>Cut-and-paste the resulting URL</li>
                         </ul>
-                    </p>
-                    """)
-            , css_class="location-box"),
-            Div(
-            FormActions(
-                Submit('save', 'Save new location', css_class='btn-primary'),
-                Button('cancel', 'Cancel')
-                
-            )
-            , css_class="text-box")
-        )
-        
+                     </p>
+                     """)
+             , css_class="location-box"),
+             Div(
+             FormActions(
+                 Submit('savelocations', 'Save new location', css_class='btn-primary'),
+                 Button('cancel', 'Cancel')
 
-    @property
+             )
+             , css_class="text-box")
+         )
+
     def clean(self):
 
         cleaned_data = super(LocationForm, self).clean()
-        address = cleaned_data.get('address') 
-        latitude = cleaned_data.get('latitude') 
+        cleaned_data_itemgroup = super(ItemGroupForm, self).clean()
+        cleaned_data_urls = super(UrlForm, self).clean()
+        address = cleaned_data.get('address')
+        latitude = cleaned_data.get('latitude')
         longitude = cleaned_data.get('longitude')
-        info = cleaned_data.get('info')
-        title = cleaned_data.get('title')
         mapurl = cleaned_data.get('mapurl')
 
         if len(address) > 0 and address != 'None':
@@ -241,7 +307,7 @@ class LocationForm(forms.ModelForm):
 
         elif len(mapurl) > 0 and mapurl != 'None':
             cleaned_data['method'] = 'mapurl'
-            
+
             # We validate that we got a real url and not just a string of data
             try:
                 urllib.urlopen(mapurl)
@@ -252,38 +318,45 @@ class LocationForm(forms.ModelForm):
 
                 latlong = getlatlongfromurl(mapurl)
                 print latlong
-                            
+
                 if latlong:
                     cleaned_data['mapurl'] = mapurl
                     url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong+'&sensor=true'
+                    print ('check')
                     data = urllib2.urlopen(url).read()
+                    print "%s, %s" % (data, "Hello 123")
                     json_data = json.loads(data)
+                    print "%s, test 123" % (json_data)
                 else:
                     msg = "We were unable to parse lat/long coordinates from the given map url."
                     self._errors["mapurl"] = self.error_class([msg])
                     raise forms.ValidationError(msg)
-                    
+
 
             except UnicodeError:
                 ms = u"UnicodeError in map url"
                 self._errors["mapurl"] = self.error_class([msg])
+                print ("check after error 1")
                 raise forms.ValidationError(msg)
             except IOError:
                 msg = u"IOError in map url"
                 self._errors["mapurl"] = self.error_class([msg])
+                print ("check after error 2")
                 raise forms.ValidationError(msg)
             except Exception as e:
                 print('%s' % e)
                 msg = u"Exception map url"
                 self._errors["mapurl"] = self.error_class([msg])
+                print ("check after error 3")
                 raise forms.ValidationError(msg)
-                
+
+
         elif len(latitude) > 0  and len(longitude) > 0 and latitude != 'None' and longitude != 'None':
             cleaned_data['method'] = 'latlong'
-            
+
             # Below we check to see if we got valid floating point numbers for the lat long coords.
             # If not we throw and exception.
-            
+
             try:
                 latitude_float_test = float(latitude)
             except ValueError:
@@ -298,11 +371,11 @@ class LocationForm(forms.ModelForm):
                 self._errors["longitude"] = self.error_class([msg])
                 raise forms.ValidationError(msg)
 
-            
+
             # We need to build the google geocode query string and see if we get good data.
             # If not we throw and exception.
-            
-            latlong = latitude + ',' + longitude 
+
+            latlong = latitude + ',' + longitude
             # http://maps.googleapis.com/maps/api/geocode/json?latlng=32.381499,-62.319492&sensor=true
             url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong+'&sensor=true'
             data = urllib2.urlopen(url).read()
@@ -316,10 +389,10 @@ class LocationForm(forms.ModelForm):
                 raise forms.ValidationError(msg)
 
         else:
-            
+
             # The user did not enter any values for any of the geocoding fields (i.e address, lat/long. mapurl)
             # so we throw and exception.
-            
+
             cleaned_data['method'] = 'None'
             msg = u"You must enter one of the following"
             self._errors["address"] = self.error_class([msg])
@@ -327,11 +400,23 @@ class LocationForm(forms.ModelForm):
             self._errors["longitude"] = self.error_class([msg])
             self._errors["mapurl"] = self.error_class([msg])
             raise forms.ValidationError(msg)
-        
-        result = json_data['results'][0]   
-        cleaned_data['address'] = result['formatted_address']       
+
+
+        result = json_data['results'][0]
+        cleaned_data['address'] = result['formatted_address']
         cleaned_data['generated_latitude'] = result['geometry']['location']['lat']
         cleaned_data['generated_longitude'] = result['geometry']['location']['lng']
+        cleaned_data['user_id'] = self._user_id
+        cleaned_data['fist_name'] = self._first_name
+        cleaned_data['last_name'] = self._last_name
+        cleaned_data_itemgroup['item_name'] = self._item_name
+        cleaned_data_itemgroup['item_description'] = self._item_description
+        cleaned_data_urls['url_1'] = self._url_1
+        cleaned_data_urls['description_1'] = self._description_1
+        cleaned_data_urls['url_2'] = self._url_2
+        cleaned_data_urls['description_2'] = self._description_2
+        cleaned_data_urls['url_3'] = self._url_3
+        cleaned_data_urls['description_3'] = self._description_3
 
         for component in result['address_components']:
             if len(component['types']) > 0:
@@ -342,18 +427,11 @@ class LocationForm(forms.ModelForm):
                 if component['types'][0] == 'administrative_area_level_1':
                     cleaned_data['region'] = component.get('short_name')
 
-        #cleaned_data['user_id'] = self._user_id
-        #cleaned_data['itemgroup_id'] = self._itemgroup_id
-        #cleaned_data['title'] = self._title
-        #cleaned_data['info'] = self._info
-        #for key,value in cleaned_data.items():
-        #    logger.debug('Key: '+key+', Value='+str(value))
-
         logger.debug("clean complete")
 
-        return cleaned_data
+        return cleaned_data and cleaned_data_itemgroup and cleaned_data_urls
 
-    def save(self, commit=True, *args, **kwargs):
+    def savelocations(self, commit=True, *args, **kwargs):
         logger.debug("save initiated")
         instance = super(LocationForm, self).save(commit=False, *args, **kwargs)
 
@@ -363,7 +441,31 @@ class LocationForm(forms.ModelForm):
         instance.locality = cleaned_data['locality']
         instance.country = cleaned_data['country']
         instance.region = cleaned_data['region']
+        instance.user_id = cleaned_data['user_id']
+        instance.first_name = cleaned_data['fist_name']
+        instance.last_name = cleaned_data['last_name']
 
         if commit:
             instance.save()
         return instance
+
+    def saveitemgroup(self, commit=True, *args, **kwargs):
+        logger.debug("SAVE INITIATED")
+        instanceitem = super(ItemGroupForm, self).save(commit=False, *args, **kwargs)
+        instanceurl = super(UrlForm, self).save(commit=False, *args, **kwargs)
+
+        cleaned_data_itemgroup = self.cleaned_data_itemgroup
+        cleaned_data_urls = self.cleaned_data_urls
+        instanceitem.item_name = cleaned_data_itemgroup['item_name']
+        instanceitem.item_description = cleaned_data_itemgroup['item_description']
+        instanceurl.url_1 = cleaned_data_urls['url_1']
+        instanceurl.description_1 = cleaned_data_urls['description_1']
+        instanceurl.url_2 = cleaned_data_urls['url_2']
+        instanceurl.description_2 = cleaned_data_urls['description_2']
+        instanceurl.url_3 = cleaned_data_urls['url_3']
+        instanceurl.description_3 = cleaned_data_urls['description_3']
+
+        if commit:
+            instanceitem.save()
+            instanceurl.save()
+        return instanceitem and instanceurl

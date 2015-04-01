@@ -17,7 +17,7 @@ class Locations(models.Model):
     last_name = models.CharField(max_length=50)
     user_id = models.CharField(max_length=50)
     title = models.CharField(max_length=50)
-    info = models.CharField(max_length=500)
+    info = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     latitude = models.CharField(max_length=50)
     longitude = models.CharField(max_length=50)

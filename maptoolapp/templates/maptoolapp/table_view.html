@@ -24,8 +24,8 @@
             <tbody>
                 {%  for rec in data %}
                 <tr>
-                    <td> {% if rec.first_name_permission %}  {{ rec.first_name }} {% endif %}</td>
-                    <td> {% if rec.last_name_permission %} {{ rec.last_name }} {% endif %}</td>
+                    <td> {{ rec.first_name }} </td>
+                    <td> {{ rec.last_name }} </td>
                     <td> {{ rec.title }} </td>
                     <td> {{ rec.info }} </td>
                     <td><a href="http://maps.google.com/?q={{ rec.generated_latitude }},{{ rec.generated_longitude }}" target="_blank">Location of {{ rec.title }}</a></td>

@@ -148,3 +148,4 @@ MAP_TOOL_APP = {
         'user_id',
         ]
 }
+# CRISPY_FAIL_SILENTLY = not DEBUG
