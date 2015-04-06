@@ -46,19 +46,21 @@ def main(request):
     """
     The main method display the default view which is the instance_selection view.
     """
-    user_type = getparamfromsession(request, 'role')
-    # TODO (Direct professor to config page if there are no itemgroups)
-    # if user_type == "Instructor" and THERE_ARE_NO_ITEMGROUPS:
+    user_type = getparamfromsession(request, 'roles')
+    custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_id')
+    data = ItemGroup.objects.filter(custom_canvas_course_id = custom_canvas_course_id)
+
+    # if ("Instructor" in user_type) and (data.count() == 0):
     #     itemgroupform = ItemGroupForm
-    #     urlform = UrlForm
-    #     return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform, 'urlform':urlform})
-    # TODO (Direct user to landing page to select tool instance)
+    #     return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform})
     # else:
-    #     data = ItemGroup.objects.all()
+    #     itemgroup_session = ItemGroup.objects.get(id=1)
+    #     request.session['itemgroup_session'] = itemgroup_session.id
     #     return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
-    itemgroupform = ItemGroupForm
-    urlform = UrlForm
-    return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform, 'urlform':urlform})
+    # itemgroup_session = ItemGroup.objects.get(id=1)
+    # request.session['itemgroup_session'] = itemgroup_session.id
+    key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
+    return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key})
 
 @login_required()
 @require_http_methods(['GET'])
@@ -96,14 +98,11 @@ def addoreditlocation(request):
     lis_person_name_given = getparamfromsession(request, 'lis_person_name_given')
 
     locationform = LocationForm(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=enter_user_id, data=request.POST)
-    #TODO (Delete the hardcoded itemgroup below)
-    itemgroup = ItemGroup.objects.create(context_id="adsfasdfa",resource_link_id="adfasdfasdf",custom_canvas_course_id="10",item_name="hksjdhfskj",item_description="hskdjfhskdj")
-    itemgroup.save()
+    itemgroup_session = request.session.get('itemgroup_session', 1)
 
     if locationform.is_valid():
         theform = locationform.save(commit=False)
-        #TODO (Delete line below)
-        theform.itemgroup = itemgroup
+        theform.itemgroup = ItemGroup.objects.get(id=itemgroup_session)
         theform.first_name = lis_person_name_given
         theform.last_name = lis_person_name_family
         theform.user_id = enter_user_id
@@ -120,38 +119,44 @@ def toolinstanceconfig(request):
     The action method for the configuring a new instance of the tool.
     """
     context_id = getparamfromsession(request, 'context_id')
-    custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_idy')
+    custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_id')
     resource_link_id = getparamfromsession(request, 'resource_link_id')
 
     itemgroupform = ItemGroupForm(context_id=context_id, custom_canvas_course_id=custom_canvas_course_id, resource_link_id=resource_link_id, data=request.POST)
-    urlform = UrlForm(data=request.GET)
-    if itemgroupform.is_valid():
-        print('ITEMGROUPFORM IS VALID')
-    if urlform.is_valid():
-        print('URLFORM IS VALID')
-
-    if itemgroupform.is_valid() and urlform.is_valid():
-        theitemform = itemgroupform.save(commit=False)
-        theitemform.context_id = context_id
-        theitemform.custom_canvas_course_id = custom_canvas_course_id
-        theitemform.resource_link_id = resource_link_id
-        theitemform.save()
-        theurlform = urlform.save(commit=False)
-        theurlform.itemgroup = theitemform
-        theurlform.save()
-        data = ItemGroup.objects.all()
-        return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
+    urlform = UrlForm(data=request.POST)
+    if request.POST:
+        if itemgroupform.is_valid():
+            theitemform = itemgroupform.save(commit=False)
+            theitemform.context_id = context_id
+            theitemform.custom_canvas_course_id = custom_canvas_course_id
+            theitemform.resource_link_id = resource_link_id
+            theitemform.save()
+            request.session['itemgroup_session'] = theitemform.id
+            render_url_form = UrlForm
+            return render(request, 'maptoolapp/tool_instance_config_2.html', {'request': request, 'urlform': render_url_form})
+        elif urlform.is_valid():
+            itemgroupform = ItemGroup.objects.get(id=request.session.get('itemgroup_session'))
+            theurlform = urlform.save(commit=False)
+            theurlform.itemgroup = itemgroupform
+            theurlform.save()
+            data = ItemGroup.objects.all()
+            return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
+        else:
+            return render(request, 'maptoolapp/error.html', {'message': 'Error: please refresh and try configuring the tool again'})
     else:
-        return render(request, 'maptoolapp/error.html', {'message': 'Error: please refresh and try configuring the tool again'})
+        itemgroupform = ItemGroupForm
+        data = ItemGroup.objects.filter(custom_canvas_course_id = custom_canvas_course_id)
+        count = data.count()
+        return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform, 'data':data, 'count':count})
 @login_required()
 @require_http_methods(['GET'])
 def table_view(request):
     """
     renders the data and display of the table view of students
     """
-    #TODO (Get item group, filter by itemgroup id)
-    students = Locations.objects.all()
-    return render(request, 'maptoolapp/table_view.html', {'request': request, 'data': students})
+    itemgroup_session = request.session.get('itemgroup_session')
+    locationlist = Locations.objects.filter(itemgroup = itemgroup_session)
+    return render(request, 'maptoolapp/table_view.html', {'request': request, 'data': locationlist})
 
 @login_required()
 @require_http_methods(['GET'])
@@ -159,11 +164,9 @@ def markers_class_xml(request):
     """
     renders the XML containing the location data for the google map
     """
-    #TODO (Get item group, filter by itemgroup id)
-    students = Locations.objects.all()
-    return render_to_response('maptoolapp/markers.xml',
-                          {'data' : students},
-                          context_instance=RequestContext(request))
+    itemgroup_session = request.session.get('itemgroup_session')
+    locationlist = Locations.objects.filter(itemgroup = itemgroup_session)
+    return render_to_response('maptoolapp/markers.xml', {'data' : locationlist}, context_instance=RequestContext(request))
 
 @require_http_methods(['GET'])
 def tool_config(request):

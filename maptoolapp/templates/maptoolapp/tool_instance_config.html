@@ -15,13 +15,34 @@
   </style>
  {% endblock %}
 </head>
+<script>
+    $('.delete-button').click(function(e){
+        var id = '#' + $(this).parent().attr('data_id');
+        };
+</script>
 <body>
 
 {% block content %}
-
+{% if data and count != "0" %}
+    <table class="table table-striped table-bordered table-condensed">
+            <caption>Delete Existing Views</caption>
+            <thead>
+                <th>View Name</th>
+                <th>View Description</th>
+                <th>Click here to delete view</th>
+            </thead>
+            <tbody>
+                {%  for rec in data %}
+                <tr>
+                    <td> {{ rec.item_name }} </td>
+                    <td> {{ rec.item_description }} </td>
+                    <td>
+                        <a href="" class="delete-button" data_id="{{ rec.id }}">Delete</a></td>
+                {% endfor %}
+            </tbody>
+        </table>
+{% endif %}
 {% crispy itemgroupform %}
-
-{% crispy urlform %}
 
 {% endblock %}
 </body>

@@ -1,0 +1,26 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Instance Config</title>
+
+{% block stylsheet %}
+  <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
+  <style type="text/css">
+  #add_user_form { margin-left: 10px; margin-top: 10px; max-width: 80%;}
+  .location-box { border: thin solid lightgrey; margin: 10px 10px; padding: 10px 10px;}
+  .text-box { margin: 10px 10px; padding: 10px 10px;}
+  legend { border-bottom: 0; }
+  </style>
+ {% endblock %}
+</head>
+<body>
+
+{% block content %}
+
+{% crispy urlform %}
+
+{% endblock %}
+</body>
+</html>

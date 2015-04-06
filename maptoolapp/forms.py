@@ -59,9 +59,7 @@ class ItemGroupForm(forms.ModelForm):
             HTML("""
                 <h3>Tool Instance Configuration</h3>
                 <p class="help-block">Please fill in the following information about the view you would like to create.
-                You must give the view a title and short description. You may provide up to three URLs to Google Maps
-                centered on various regions you would like to display. If you do not choose to enter any URLs, the
-                world map will be selected by default.</p>
+                You must give the view a title and short description.</p>
                 """)
             , css_class="text-box"),
             Div(
@@ -71,7 +69,14 @@ class ItemGroupForm(forms.ModelForm):
                     'item_description'
                 ),
                 css_class="location-box"),
-         )
+            Div(
+                 FormActions(
+                     Submit('saveitemgroup', 'Next page', css_class='btn-primary'),
+                     Button('cancel', 'Cancel')
+
+                 )
+                 , css_class="text-box")
+        )
 
 class UrlForm(forms.ModelForm):
         class Meta:
@@ -121,12 +126,20 @@ class UrlForm(forms.ModelForm):
             self.helper.form_class = 'form-horizontal'
             self.helper.label_class = 'col-lg-2'
             self.helper.field_class = 'col-lg-8'
-            self.helper.form_method = 'get'
+            self.helper.form_method = 'post'
             self.helper.help_text_inline = True
             self.helper.render_unmentioned_fields = True
             self.helper.form_action = 'toolinstanceconfig'
             self.helper.form_error_title = u"There were problems with the information you submitted."
             self.helper.layout = Layout(
+                Div(
+                HTML("""
+                    <h3>Tool Instance Configuration</h3>
+                    <p class="help-block">You may provide up to three URLs to Google Maps
+                    centered on various regions you would like to display. If you do not choose to enter any URLs, the
+                    world map will be selected by default.</p>
+                    """)
+                , css_class="text-box"),
                 Div(
                     Fieldset(
                         'Links to Google Maps URLs',
@@ -140,12 +153,12 @@ class UrlForm(forms.ModelForm):
                     css_class="location-box"),
                  Div(
                  FormActions(
-                     Submit('saveitemgroup', 'Save new view', css_class='btn-primary'),
+                     Submit('saveurl', 'Save new view', css_class='btn-primary'),
                      Button('cancel', 'Cancel')
 
                  )
                  , css_class="text-box")
-             )
+            )
 
 class LocationForm(forms.ModelForm):
     class Meta:
@@ -274,7 +287,7 @@ class LocationForm(forms.ModelForm):
              , css_class="location-box"),
              Div(
              FormActions(
-                 Submit('savelocations', 'Save new location', css_class='btn-primary'),
+                 Submit('save', 'Save new location', css_class='btn-primary'),
                  Button('cancel', 'Cancel')
 
              )
@@ -284,8 +297,8 @@ class LocationForm(forms.ModelForm):
     def clean(self):
 
         cleaned_data = super(LocationForm, self).clean()
-        cleaned_data_itemgroup = super(ItemGroupForm, self).clean()
-        cleaned_data_urls = super(UrlForm, self).clean()
+        #cleaned_data_itemgroup = super(ItemGroupForm, self).clean()
+        #cleaned_data_urls = super(UrlForm, self).clean()
         address = cleaned_data.get('address')
         latitude = cleaned_data.get('latitude')
         longitude = cleaned_data.get('longitude')
@@ -401,7 +414,7 @@ class LocationForm(forms.ModelForm):
             self._errors["mapurl"] = self.error_class([msg])
             raise forms.ValidationError(msg)
 
-
+        # import pdb; pdb.set_trace()
         result = json_data['results'][0]
         cleaned_data['address'] = result['formatted_address']
         cleaned_data['generated_latitude'] = result['geometry']['location']['lat']
@@ -409,14 +422,14 @@ class LocationForm(forms.ModelForm):
         cleaned_data['user_id'] = self._user_id
         cleaned_data['fist_name'] = self._first_name
         cleaned_data['last_name'] = self._last_name
-        cleaned_data_itemgroup['item_name'] = self._item_name
-        cleaned_data_itemgroup['item_description'] = self._item_description
-        cleaned_data_urls['url_1'] = self._url_1
-        cleaned_data_urls['description_1'] = self._description_1
-        cleaned_data_urls['url_2'] = self._url_2
-        cleaned_data_urls['description_2'] = self._description_2
-        cleaned_data_urls['url_3'] = self._url_3
-        cleaned_data_urls['description_3'] = self._description_3
+        # cleaned_data_itemgroup['item_name'] = self._item_name
+        # cleaned_data_itemgroup['item_description'] = self._item_description
+        # cleaned_data_urls['url_1'] = self._url_1
+        # cleaned_data_urls['description_1'] = self._description_1
+        # cleaned_data_urls['url_2'] = self._url_2
+        # cleaned_data_urls['description_2'] = self._description_2
+        # cleaned_data_urls['url_3'] = self._url_3
+        # cleaned_data_urls['description_3'] = self._description_3
 
         for component in result['address_components']:
             if len(component['types']) > 0:
@@ -429,9 +442,9 @@ class LocationForm(forms.ModelForm):
 
         logger.debug("clean complete")
 
-        return cleaned_data and cleaned_data_itemgroup and cleaned_data_urls
+        return cleaned_data # and cleaned_data_itemgroup and cleaned_data_urls
 
-    def savelocations(self, commit=True, *args, **kwargs):
+    def save(self, commit=True, *args, **kwargs):
         logger.debug("save initiated")
         instance = super(LocationForm, self).save(commit=False, *args, **kwargs)
 
@@ -451,21 +464,14 @@ class LocationForm(forms.ModelForm):
 
     def saveitemgroup(self, commit=True, *args, **kwargs):
         logger.debug("SAVE INITIATED")
-        instanceitem = super(ItemGroupForm, self).save(commit=False, *args, **kwargs)
-        instanceurl = super(UrlForm, self).save(commit=False, *args, **kwargs)
-
-        cleaned_data_itemgroup = self.cleaned_data_itemgroup
-        cleaned_data_urls = self.cleaned_data_urls
-        instanceitem.item_name = cleaned_data_itemgroup['item_name']
-        instanceitem.item_description = cleaned_data_itemgroup['item_description']
-        instanceurl.url_1 = cleaned_data_urls['url_1']
-        instanceurl.description_1 = cleaned_data_urls['description_1']
-        instanceurl.url_2 = cleaned_data_urls['url_2']
-        instanceurl.description_2 = cleaned_data_urls['description_2']
-        instanceurl.url_3 = cleaned_data_urls['url_3']
-        instanceurl.description_3 = cleaned_data_urls['description_3']
-
+        instance = super(ItemGroupForm, self).save(commit=False, *args, **kwargs)
         if commit:
-            instanceitem.save()
-            instanceurl.save()
-        return instanceitem and instanceurl
+            instance.save()
+        return instance
+
+    def saveurl(self, commit=True, *args, **kwargs):
+        logger.debug("SAVE INITIATED")
+        instance = super(UrlForm, self).save(commit=False, *args, **kwargs)
+        if commit:
+            instance.save()
+        return instance
