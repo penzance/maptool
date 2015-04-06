@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     url(r'^tool_config$', 'maptoolapp.views.tool_config', name='tool_config'),
     url(r'^add_location$', 'maptoolapp.views.add_location', name='add_location'),
     url(r'^toolinstanceconfig$', 'maptoolapp.views.toolinstanceconfig', name='toolinstanceconfig'),
+    #url(r'^delete_group$', 'maptoolapp.views.delete_group', name='delete_group')
     )
 
