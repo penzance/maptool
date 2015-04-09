@@ -5,30 +5,32 @@
 <title>Select Tool Instance</title>
 {% block stylsheet %}
 <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 {% endblock %}
 </head>
 <body>
 
 {% block content %}
-        <table class="table table-striped table-bordered table-condensed">
-            <caption>View Listing</caption>
-            <thead>
-                <th>View Name</th>
-                <th>View Description</th>
-                <th>Click here to go to view</th>
-            </thead>
-            <tbody>
-                {%  for rec in data %}
-                <tr>
-                    <td> {{ rec.item_name }} </td>
-                    <td> {{ rec.item_description }} </td>
-                    <!--TODO Something to construct a clickable link that sets selected itemgroup in the session,
-                    TODO that can be overridden if the user returns, and that calls main from views.py -->
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
+<div class="text-center">
+<h3>Select a tool instance to view:</h3><br>
+
+{%  for rec in data %}
+    <form action="/lti_tools/maptoolapp/displaymaps" method="post">
+        <input type="hidden" name='id' value="{{ rec.id }}">
+        <div class="selectView" data-id="{{ rec.id }}">
+            <a href="#"><h4><b>{{ rec.item_name }}</b> <i class="fa fa-arrow-circle-right"></i></h4>
+            Description: {{ rec.item_description }}</a><br><br>
+        </div>
+    </form>
+{% endfor %}
+</div>
+
+{% endblock %}
+{% block javascript %}
+<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+<script src="{% static "js/maptool.js" %}"></script>
 {% endblock %}
 </body>
 </html>

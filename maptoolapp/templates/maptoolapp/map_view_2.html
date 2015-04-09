@@ -6,6 +6,7 @@
 
 {% block stylesheet %}
 <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <style type="text/css">
     div#map, div#maplocal {
         margin-bottom: 15px;
@@ -24,9 +25,13 @@
 <div id="content-div" class="row-fluid">
     <p>
         <a href="{% url 'maptoolapp:add_location' %}">Add Location</a>&#160;|&#160;
-        <a href="{% url 'maptoolapp:main' %}">View Map</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:mapsview' %}">View Map</a>&#160;|&#160;
         <a href="{% url 'maptoolapp:table_view' %}">View Table</a>
     </p>
+
+    {% for rec in itemgroup %}
+<div class="text-center"><h3>{{ rec.item_name }}</h3><h4>{{ rec.item_description }}</h4></div>
+{% endfor %}
 
     <!--TODO Do something with the javascript that displays these maps -->
     <p class="help-block">World view:</p>
@@ -36,7 +41,7 @@
     <div id="maplocal" style="margin: 20px; width: 600px; height: 550px;">&#160;</div>
 
     <div id="data_url">{% url 'maptoolapp:markers_class_xml' %}</div>
-
+    
     <table>
         {% for key, val in lti_launch %}
         <tr>
@@ -49,7 +54,7 @@
 {% endblock %}
 
 {% block javascript %}
-<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="{% static "js/bootstrap.min.js" %}"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&sensor=false"></script>
 <script src="{% static "js/maptool.js" %}"></script>

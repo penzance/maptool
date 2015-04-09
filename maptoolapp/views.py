@@ -48,29 +48,40 @@ def main(request):
     """
     user_type = getparamfromsession(request, 'roles')
     custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_id')
-    data = ItemGroup.objects.filter(custom_canvas_course_id = custom_canvas_course_id)
+    data = ItemGroup.objects.filter(custom_canvas_course_id=custom_canvas_course_id)
 
-    # if ("Instructor" in user_type) and (data.count() == 0):
-    #     itemgroupform = ItemGroupForm
-    #     return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform})
-    # else:
-    #     itemgroup_session = ItemGroup.objects.get(id=1)
-    #     request.session['itemgroup_session'] = itemgroup_session.id
-    #     return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
-    # itemgroup_session = ItemGroup.objects.get(id=1)
-    # request.session['itemgroup_session'] = itemgroup_session.id
-    key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
-    return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key})
+    if ("Instructor" in user_type) and (data.count() == 0):
+        itemgroupform = ItemGroupForm
+        return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform})
+    elif ("Instructor" not in user_type) and (data.count() == 0):
+        return render(request, 'maptoolapp/error.html', {'message': 'Error: The course instructor must configure this tool before it can be accessed.'})
+    else:
+        return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
 
 @login_required()
-@require_http_methods(['GET'])
+@require_http_methods(['POST'])
 def displaymaps(request):
     """
     The main method display the default view which is the map_view.
     """
+    data = request.POST.get('id')
+    request.session['itemgroup_session'] = data
+    urls = Urls.objects.filter(itemgroup=data)
+    itemgroup = ItemGroup.objects.filter(id = data)
     key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
-    # TODO Modify this render to work with map_view.html
-    return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key})
+    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup})
+
+@login_required()
+@require_http_methods(['GET'])
+def mapsview(request):
+    """
+    Method to display map view if the itemgroup_session has already been set.
+    """
+    itemgroup_session = request.session.get('itemgroup_session')
+    urls = Urls.objects.filter(itemgroup=itemgroup_session)
+    itemgroup = ItemGroup.objects.filter(id = itemgroup_session)
+    key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
+    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup})
 
 @login_required()
 @require_http_methods(['GET'])
@@ -89,6 +100,16 @@ def add_location(request):
     return render(request, 'maptoolapp/add_location.html', {'request': request, 'locationform': locationform})
 
 @login_required()
+@require_http_methods(['POST'])
+def deleteview(request):
+    """
+    Allows an instructor to delete a view from the tool.
+    """
+    data = request.POST.get('id')
+    ItemGroup.objects.filter(id=data).delete()
+    return HttpResponse('')
+
+@login_required()
 def addoreditlocation(request):
     """
     The action method for the user_edit_view form.
@@ -98,7 +119,7 @@ def addoreditlocation(request):
     lis_person_name_given = getparamfromsession(request, 'lis_person_name_given')
 
     locationform = LocationForm(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=enter_user_id, data=request.POST)
-    itemgroup_session = request.session.get('itemgroup_session', 1)
+    itemgroup_session = request.session.get('itemgroup_session')
 
     if locationform.is_valid():
         theform = locationform.save(commit=False)
