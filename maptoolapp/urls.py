@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'^deleteview$', 'maptoolapp.views.deleteview', name='deleteview'),
     url(r'^displaymaps$', 'maptoolapp.views.displaymaps', name='displaymaps'),
     url(r'^mapsview$', 'maptoolapp.views.mapsview', name='mapsview'),
+    url(r'^header$', 'maptoolapp.views.header', name='header '),
     )
 
