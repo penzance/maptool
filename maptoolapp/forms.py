@@ -81,11 +81,18 @@ class ItemGroupForm(forms.ModelForm):
 class UrlForm(forms.ModelForm):
         class Meta:
             model = Urls
-            exclude = ['itemgroup']
+            exclude = ['itemgroup', 'generated_longitude_1', 'generated_latitude_1','generated_longitude_2', 'generated_latitude_2', 'generated_longitude_3', 'generated_latitude_3']
+
+        generated_longitude_1 = forms.CharField(required=False, widget=forms.HiddenInput())
+        generated_latitude_1 = forms.CharField(required=False, widget=forms.HiddenInput())
+        generated_longitude_2 = forms.CharField(required=False, widget=forms.HiddenInput())
+        generated_latitude_2 = forms.CharField(required=False, widget=forms.HiddenInput())
+        generated_longitude_3 = forms.CharField(required=False, widget=forms.HiddenInput())
+        generated_latitude_3 = forms.CharField(required=False, widget=forms.HiddenInput())
 
         url_1 = forms.CharField(
         label="Add the Google Maps URL of the first display you want. (Leave blank for a world map)",
-        max_length=50,
+        max_length=250,
         initial='http://www.maps.google.com',
         required=True,
         )
@@ -98,7 +105,8 @@ class UrlForm(forms.ModelForm):
 
         url_2 = forms.CharField(
         label="OPTIONAL Add the Google Maps URL of the second display you want.",
-        max_length=50,
+        max_length=250,
+        initial=' ',
         required=False,
         )
 
@@ -110,7 +118,8 @@ class UrlForm(forms.ModelForm):
 
         url_3 = forms.CharField(
         label="OPTIONAL Add the Google Maps URL of the third display you want.",
-        max_length=50,
+        max_length=250,
+        initial=' ',
         required=False,
         )
 
@@ -297,8 +306,6 @@ class LocationForm(forms.ModelForm):
     def clean(self):
 
         cleaned_data = super(LocationForm, self).clean()
-        #cleaned_data_itemgroup = super(ItemGroupForm, self).clean()
-        #cleaned_data_urls = super(UrlForm, self).clean()
         address = cleaned_data.get('address')
         latitude = cleaned_data.get('latitude')
         longitude = cleaned_data.get('longitude')
@@ -363,7 +370,6 @@ class LocationForm(forms.ModelForm):
                 print ("check after error 3")
                 raise forms.ValidationError(msg)
 
-
         elif len(latitude) > 0  and len(longitude) > 0 and latitude != 'None' and longitude != 'None':
             cleaned_data['method'] = 'latlong'
 
@@ -422,14 +428,6 @@ class LocationForm(forms.ModelForm):
         cleaned_data['user_id'] = self._user_id
         cleaned_data['fist_name'] = self._first_name
         cleaned_data['last_name'] = self._last_name
-        # cleaned_data_itemgroup['item_name'] = self._item_name
-        # cleaned_data_itemgroup['item_description'] = self._item_description
-        # cleaned_data_urls['url_1'] = self._url_1
-        # cleaned_data_urls['description_1'] = self._description_1
-        # cleaned_data_urls['url_2'] = self._url_2
-        # cleaned_data_urls['description_2'] = self._description_2
-        # cleaned_data_urls['url_3'] = self._url_3
-        # cleaned_data_urls['description_3'] = self._description_3
 
         for component in result['address_components']:
             if len(component['types']) > 0:
@@ -442,10 +440,11 @@ class LocationForm(forms.ModelForm):
 
         logger.debug("clean complete")
 
-        return cleaned_data # and cleaned_data_itemgroup and cleaned_data_urls
+        return cleaned_data
+
 
     def save(self, commit=True, *args, **kwargs):
-        logger.debug("save initiated")
+        logger.debug("Location save initiated")
         instance = super(LocationForm, self).save(commit=False, *args, **kwargs)
 
         cleaned_data = self.cleaned_data
@@ -462,16 +461,61 @@ class LocationForm(forms.ModelForm):
             instance.save()
         return instance
 
-    def saveitemgroup(self, commit=True, *args, **kwargs):
-        logger.debug("SAVE INITIATED")
-        instance = super(ItemGroupForm, self).save(commit=False, *args, **kwargs)
-        if commit:
-            instance.save()
-        return instance
+    # def saveitemgroup(self, commit=True, *args, **kwargs):
+    #     logger.debug("Item SAVE INITIATED")
+    #     instance = super(ItemGroupForm, self).save(commit=False, *args, **kwargs)
+    #     if commit:
+    #         instance.save()
+    #     return instance
 
-    def saveurl(self, commit=True, *args, **kwargs):
-        logger.debug("SAVE INITIATED")
-        instance = super(UrlForm, self).save(commit=False, *args, **kwargs)
-        if commit:
-            instance.save()
-        return instance
+    # def testclean(self):
+    #     cleaned_url = super(UrlForm, self).testclean()
+    #     url_1 = cleaned_url.get('url_1')
+    #     try:
+    #         urllib.urlopen(url_1)
+    #         latlong = getlatlongfromurl(url_1)
+    #         print('We got a')
+    #         print latlong
+    #         print('!!!')
+    #
+    #         if latlong:
+    #             cleaned_url['url_1'] = url_1
+    #             url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong+'&sensor=true'
+    #             print ('check')
+    #             data = urllib2.urlopen(url).read()
+    #             print "%s, %s" % (data, "Hello 123")
+    #             json_data = json.loads(data)
+    #             print "%s, test 123" % (json_data)
+    #         else:
+    #             msg = "We were unable to parse lat/long coordinates from the given map url."
+    #             self._errors["mapurl"] = self.error_class([msg])
+    #             raise forms.ValidationError(msg)
+    #     except UnicodeError:
+    #         msg = u"UnicodeError in map url"
+    #         self._errors["mapurl"] = self.error_class([msg])
+    #         print ("check after error 1")
+    #         raise forms.ValidationError(msg)
+    #     except IOError:
+    #         msg = u"IOError in map url"
+    #         self._errors["mapurl"] = self.error_class([msg])
+    #         print ("check after error 2")
+    #         raise forms.ValidationError(msg)
+    #     except Exception as e:
+    #         print('%s' % e)
+    #         msg = u"Exception map url"
+    #         self._errors["mapurl"] = self.error_class([msg])
+    #         print ("check after error 3")
+    #         raise forms.ValidationError(msg)
+    #     return cleaned_url
+
+    # def saveurl(self, commit=True, *args, **kwargs):
+    #     logger.debug("URL SAVE INITIATED")
+    #     print('Why wont you save?')
+    #     instance = super(UrlForm, self).save(commit=False, *args, **kwargs)
+    #     instance.testclean()
+    #     cleaned_url = self.cleaned_url
+    #     instance.generated_latitude_1 = cleaned_url['generated_latitude_1']
+    #     instance.generated_longitude_1 = cleaned_url['generated_longitude_1']
+    #     if commit:
+    #         instance.save()
+    #     return instance

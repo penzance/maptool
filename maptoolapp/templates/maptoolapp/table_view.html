@@ -9,12 +9,13 @@
 </head>
 <body>
 {% block content %}
-    <p>
+
+<p class="text-box">
         <a href="{% url 'maptoolapp:toolinstanceconfig' %}">Add or Edit a Map View</a>&#160;|&#160;
         <a href="{% url 'maptoolapp:add_location' %}">Add Location</a>&#160;|&#160;
-        <a href="{% url 'maptoolapp:main' %}">View Map</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:mapsview' %}">View Map</a>&#160;|&#160;
         <a href="{% url 'maptoolapp:table_view' %}">View Table</a>
-    </p>
+</p>
         <table class="table table-striped table-bordered table-condensed">
             <caption>Student Listing</caption>
             <p> {{ generated_latitude }} {{ generated_longitude }}</p>
