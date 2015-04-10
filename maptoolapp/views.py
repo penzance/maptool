@@ -8,8 +8,16 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from maptoolapp.forms import LocationForm, ItemGroupForm, UrlForm
 from maptoolapp.models import Locations, ItemGroup, Urls
-from maptoolapp.utils import (validaterequiredltiparams, getparamfromsession)
+from maptoolapp.utils import (validaterequiredltiparams)
+import urllib2
 import datetime
+from django import forms
+from maptoolapp.utils import getlatlongfromurl
+from maptoolapp.utils import getparamfromsession
+import urllib
+import urllib2
+import json
+from models import Locations, Urls, ItemGroup
 
 import logging
 
@@ -66,10 +74,12 @@ def displaymaps(request):
     """
     data = request.POST.get('id')
     request.session['itemgroup_session'] = data
-    urls = Urls.objects.filter(itemgroup=data)
+    urls = Urls.objects.get(itemgroup=data)
     itemgroup = ItemGroup.objects.filter(id = data)
     key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
-    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup})
+    user_id = getparamfromsession(request, 'user_id')
+    mypoints = Locations.objects.filter(user_id=user_id)
+    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
 
 @login_required()
 @require_http_methods(['GET'])
@@ -77,11 +87,13 @@ def mapsview(request):
     """
     Method to display map view if the itemgroup_session has already been set.
     """
+    user_id = getparamfromsession(request, 'user_id')
     itemgroup_session = request.session.get('itemgroup_session')
-    urls = Urls.objects.filter(itemgroup=itemgroup_session)
+    urls = Urls.objects.get(itemgroup=itemgroup_session)
     itemgroup = ItemGroup.objects.filter(id = itemgroup_session)
     key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
-    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup})
+    mypoints = Locations.objects.filter(user_id=user_id)
+    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
 
 @login_required()
 @require_http_methods(['GET'])
@@ -105,8 +117,12 @@ def deleteview(request):
     """
     Allows an instructor to delete a view from the tool.
     """
+    theclass = request.POST.get('class')
     data = request.POST.get('id')
-    ItemGroup.objects.filter(id=data).delete()
+    if theclass == 'deleteRow':
+        ItemGroup.objects.filter(id=data).delete()
+    else:
+        Locations.objects.filter(id=data).delete()
     return HttpResponse('')
 
 @login_required()
@@ -122,6 +138,11 @@ def addoreditlocation(request):
     itemgroup_session = request.session.get('itemgroup_session')
 
     if locationform.is_valid():
+        user_id = getparamfromsession(request, 'user_id')
+        mypoints = Locations.objects.filter(user_id=user_id)
+        itemgroup_session = request.session.get('itemgroup_session')
+        urls = Urls.objects.get(itemgroup=itemgroup_session)
+        itemgroup = ItemGroup.objects.filter(id = itemgroup_session)
         theform = locationform.save(commit=False)
         theform.itemgroup = ItemGroup.objects.get(id=itemgroup_session)
         theform.first_name = lis_person_name_given
@@ -130,7 +151,7 @@ def addoreditlocation(request):
         theform.datetime = datetime.datetime.now()
         theform.save()
         key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
-        return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key})
+        return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
     else:
         return render(request, 'maptoolapp/add_location.html', {'request': request, 'locationform': locationform})
 
@@ -158,6 +179,82 @@ def toolinstanceconfig(request):
         elif urlform.is_valid():
             itemgroupform = ItemGroup.objects.get(id=request.session.get('itemgroup_session'))
             theurlform = urlform.save(commit=False)
+            url_1 = theurlform.url_1
+            url_2 = theurlform.url_2
+            url_3 = theurlform.url_3
+            if url_1 is not "":
+                try:
+                    urllib.urlopen(url_1)
+                    latlong_1 = getlatlongfromurl(url_1)
+
+                    if latlong_1:
+                        test_url_1 = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong_1+'&sensor=true'
+                        data_1 = urllib2.urlopen(test_url_1).read()
+                        json_data_1 = json.loads(data_1)
+                    # else:
+                        # breakbreak
+                        # msg = "1 We were unable to parse lat/long coordinates from the given map urls. Try again"
+                        # raise forms.ValidationError(msg)
+                except UnicodeError:
+                    msg = u"UnicodeError in map url"
+                    self._errors["mapurl"] = self.error_class([msg])
+                    raise forms.ValidationError(msg)
+                except IOError:
+                    msg = u"1IOError in map url"
+                    raise forms.ValidationError(msg)
+            print('!!!!!')
+            print url_2
+            if url_2 is not ' ':
+                try:
+                    urllib.urlopen(url_2)
+                    latlong_2 = getlatlongfromurl(url_2)
+
+                    if latlong_2:
+                        test_url_2 = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong_2+'&sensor=true'
+                        data_2 = urllib2.urlopen(test_url_2).read()
+                        json_data_2 = json.loads(data_2)
+                    # else:
+                    #     break
+                        # msg = "2 We were unable to parse lat/long coordinates from the given map urls. Try again"
+                        # raise forms.ValidationError(msg)
+                except UnicodeError:
+                    msg = u"UnicodeError in map url"
+                    self._errors["mapurl"] = self.error_class([msg])
+                    raise forms.ValidationError(msg)
+                except IOError:
+                    msg = u"2IOError in map url"
+                    raise forms.ValidationError(msg)
+            if url_3 is not ' ':
+                try:
+                    urllib.urlopen(url_3)
+                    latlong_3 = getlatlongfromurl(url_3)
+
+                    if latlong_3:
+                        test_url_3 = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong_3+'&sensor=true'
+                        data_3 = urllib2.urlopen(test_url_3).read()
+                        json_data_3 = json.loads(data_3)
+                    # else:
+                    #     break
+                        # msg = "We were unable to parse lat/long coordinates from the given map urls. Try again"
+                        # raise forms.ValidationError(msg)
+
+                except UnicodeError:
+                    msg = u"UnicodeError in map url"
+                    self._errors["mapurl"] = self.error_class([msg])
+                    raise forms.ValidationError(msg)
+                except IOError:
+                    msg = u"3IOError in map url"
+                    raise forms.ValidationError(msg)
+
+            result_1 = json_data_1['results'][0]
+            result_2 = json_data_2['results'][0]
+            result_3 = json_data_3['results'][0]
+            theurlform.generated_longitude_1 = result_1['geometry']['location']['lng']
+            theurlform.generated_latitude_1 = result_1['geometry']['location']['lat']
+            theurlform.generated_longitude_2 = result_2['geometry']['location']['lng']
+            theurlform.generated_latitude_2 = result_2['geometry']['location']['lat']
+            theurlform.generated_longitude_3 = result_3['geometry']['location']['lng']
+            theurlform.generated_latitude_3 = result_3d['geometry']['location']['lat']
             theurlform.itemgroup = itemgroupform
             theurlform.save()
             data = ItemGroup.objects.all()
@@ -188,6 +285,19 @@ def markers_class_xml(request):
     itemgroup_session = request.session.get('itemgroup_session')
     locationlist = Locations.objects.filter(itemgroup = itemgroup_session)
     return render_to_response('maptoolapp/markers.xml', {'data' : locationlist}, context_instance=RequestContext(request))
+
+@login_required()
+@require_http_methods(['GET'])
+def header(request):
+    """
+    renders a header
+    """
+    user_type = getparamfromsession(request, 'roles')
+    if ("Instructor" in user_type):
+        role = 'instructor'
+    else:
+        role = 'student'
+    return render('maptoolapp/header.html', {'role': role})
 
 @require_http_methods(['GET'])
 def tool_config(request):

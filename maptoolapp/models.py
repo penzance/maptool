@@ -25,12 +25,18 @@ class Locations(models.Model):
 
 class Urls(models.Model):
     itemgroup = models.ForeignKey('ItemGroup')
-    url_1 = models.CharField(max_length=200)
-    description_1 = models.CharField(max_length=50)
-    url_2 = models.CharField(max_length=200)
-    description_2 = models.CharField(max_length=50)
-    url_3 = models.CharField(max_length=200)
-    description_3 = models.CharField(max_length=50)
+    url_1 = models.CharField(max_length=250)
+    generated_longitude_1 = models.CharField(max_length=50)
+    generated_latitude_1 = models.CharField(max_length=50)
+    description_1 = models.CharField(max_length=250)
+    url_2 = models.CharField(max_length=250)
+    generated_longitude_2 = models.CharField(max_length=50)
+    generated_latitude_2 = models.CharField(max_length=50)
+    description_2 = models.CharField(max_length=250)
+    url_3 = models.CharField(max_length=250)
+    generated_longitude_3 = models.CharField(max_length=50)
+    generated_latitude_3 = models.CharField(max_length=50)
+    description_3 = models.CharField(max_length=250)
 
 class ItemGroup(models.Model):
     context_id = models.CharField(max_length=50)
