@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r'^add_location$', 'maptoolapp.views.add_location', name='add_location'),
     url(r'^toolinstanceconfig$', 'maptoolapp.views.toolinstanceconfig', name='toolinstanceconfig'),
     url(r'^deleteview$', 'maptoolapp.views.deleteview', name='deleteview'),
-    url(r'^displaymaps$', 'maptoolapp.views.displaymaps', name='displaymaps'),
+    url(r'^displaymaps/(\d+)/$', 'maptoolapp.views.displaymaps', name='displaymaps'),
     url(r'^mapsview$', 'maptoolapp.views.mapsview', name='mapsview'),
     url(r'^header$', 'maptoolapp.views.header', name='header '),
     )
