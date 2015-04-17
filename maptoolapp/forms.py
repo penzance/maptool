@@ -81,7 +81,7 @@ class ItemGroupForm(forms.ModelForm):
 class UrlForm(forms.ModelForm):
         class Meta:
             model = Urls
-            exclude = ['itemgroup', 'generated_longitude_1', 'generated_latitude_1','generated_longitude_2', 'generated_latitude_2', 'generated_longitude_3', 'generated_latitude_3']
+            exclude = ['itemgroup', 'generated_longitude_1', 'generated_latitude_1','generated_longitude_2', 'generated_latitude_2', 'generated_longitude_3', 'generated_latitude_3', 'zoom_1', 'zoom_2', 'zoom_3']
 
         generated_longitude_1 = forms.CharField(required=False, widget=forms.HiddenInput())
         generated_latitude_1 = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -89,6 +89,9 @@ class UrlForm(forms.ModelForm):
         generated_latitude_2 = forms.CharField(required=False, widget=forms.HiddenInput())
         generated_longitude_3 = forms.CharField(required=False, widget=forms.HiddenInput())
         generated_latitude_3 = forms.CharField(required=False, widget=forms.HiddenInput())
+        zoom_1 = forms.CharField(required=False, widget=forms.HiddenInput())
+        zoom_2 = forms.CharField(required=False, widget=forms.HiddenInput())
+        zoom_3 = forms.CharField(required=False, widget=forms.HiddenInput())
 
         url_1 = forms.CharField(
         label="Add the Google Maps URL of the first display you want. (Leave blank for a world map)",
@@ -106,7 +109,7 @@ class UrlForm(forms.ModelForm):
         url_2 = forms.CharField(
         label="OPTIONAL Add the Google Maps URL of the second display you want.",
         max_length=250,
-        initial=' ',
+        initial='',
         required=False,
         )
 
@@ -119,7 +122,7 @@ class UrlForm(forms.ModelForm):
         url_3 = forms.CharField(
         label="OPTIONAL Add the Google Maps URL of the third display you want.",
         max_length=250,
-        initial=' ',
+        initial='',
         required=False,
         )
 

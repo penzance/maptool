@@ -28,12 +28,13 @@
       	font-size: 1em;
       	margin-left: 20px;
       	}
+        div#data_url { display: none; }
     </style>
 {% endblock %}
 {% block javascript %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&sensor=false"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="{% static "js/bootstrap.min.js" %}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&sensor=false"></script>
 <script src="{% static "js/maptool.js" %}"></script>
 {% endblock %}
 </head>
@@ -52,30 +53,30 @@
 <div class="text-center"><h3>{{ rec.item_name }}</h3><h4>{{ rec.item_description }}</h4></div>
 {% endfor %}
 
-    {% if urls.url_1 != "" %}
+    {% if urls.url_1 %}
     <div class="map-container">
         <h3>{{ urls.description_1 }}</h3>
-        <div id="map-canvas-1" data-lat="{{ urls.generated_latitude_1 }}" data-long="{{ urls.generated_longitude_1 }}" data-zoom="8" data-item-group-id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
+        <div id="map_canvas_1" data-lat="{{ urls.generated_latitude_1 }}" data-long="{{ urls.generated_longitude_1 }}" data-zoom="{{ urls.zoom_1 }}" data-item_group_id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
     <div class="my-points">
   		<p class="point-title">My Points</p>
 		<ul>
             {% for point in mypoints %}
-			<li class="a-point" data-id="{{ point.id }}">{{ point.title }} <a href="#"><i class="fa fa-trash"></i></a></li>
+			<li class="delete-point" data-id="{{ point.id }}">{{ point.title }} <a href="#"><i class="fa fa-trash"></i></a></li>
             {% endfor %}
 		</ul>
 	</div>
     </div>
     {% endif %}
-    {% if urls.url_2 != "" %}
+    {% if urls.url_2 %}
     <div class="map-container">
         <h3>{{ urls.description_2 }}</h3>
-        <div id="map-canvas-2" data-lat="{{ urls.generated_latitude_2 }}" data-long="{{ urls.generated_longitude_2 }}" data-zoom="8" data-item-group-id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
+        <div id="map_canvas_2" data-lat="{{ urls.generated_latitude_2 }}" data-long="{{ urls.generated_longitude_2 }}" data-zoom="{{ urls.zoom_2 }}" data-item_group_id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
     </div>
     {% endif %}
-    {% if urls.url_3 != "" %}
+    {% if urls.url_3 %}
     <div class="map-container">
         <h3>{{ urls.description_3 }}</h3>
-        <div id="map-canvas-3" data-lat="{{ urls.generated_latitude_3 }}" data-long="{{ urls.generated_longitude_3 }}" data-zoom="8" data-item-group-id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
+        <div id="map_canvas_3" data-lat="{{ urls.generated_latitude_3 }}" data-long="{{ urls.generated_longitude_3 }}" data-zoom="{{ urls.zoom_3 }}" data-item_group_id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
     </div>
     <div id="data_url">{% url 'maptoolapp:markers_class_xml' %}</div>
     <table>
