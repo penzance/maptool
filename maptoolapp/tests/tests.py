@@ -67,7 +67,7 @@ class TestMapView(TestCase):
         """ test that the main view renders the map_view page """
         request = self.request
         main(request)
-        render.assert_called_with(request, 'student_locations/map_view.html', ANY)
+        render.assert_called_with(request, 'student_locations/donemap_view.html', ANY)
 
 
  
