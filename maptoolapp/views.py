@@ -7,9 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from maptoolapp.forms import LocationForm, ItemGroupForm, UrlForm
-from maptoolapp.models import Locations, ItemGroup, Urls
 from maptoolapp.utils import (validaterequiredltiparams)
-import urllib2
 import datetime
 from django import forms
 from maptoolapp.utils import getlatlongandzoom
@@ -20,9 +18,8 @@ import json
 from models import Locations, Urls, ItemGroup
 
 import logging
-
-
 logger = logging.getLogger(__name__)
+
 
 @require_http_methods(['GET'])
 def index(request):
@@ -44,7 +41,9 @@ def lti_launch(request):
         if validaterequiredltiparams(request):
             return redirect('maptoolapp:main')
         else:
-            return render(request, 'maptoolapp/error.html', {'message': 'Error: The LTI parameter lis_course_offering_sourcedid is required by this LTI tool.'})
+            return render(request, 'maptoolapp/error.html', {'message': 'Error: The LTI parameter '
+                                                                        'lis_course_offering_sourcedid is '
+                                                                        'required by this LTI tool.'})
     else:
         return render(request, 'maptoolapp/error.html', {'message': 'Error: user is not authenticated!'})
 
@@ -57,7 +56,7 @@ def main(request):
     user_type = getparamfromsession(request, 'roles')
     custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_id')
 
-    # Check to make sure that both all itemgroups have a corresponding url  have been submitted
+    # Check to make sure that both all itemgroups have a corresponding url have been submitted
     itemgroup_ids = ItemGroup.objects.all().values('id')
     for itemgroup in itemgroup_ids:
         check_itemgroup = itemgroup.get('id')
@@ -67,11 +66,18 @@ def main(request):
 
     data = ItemGroup.objects.filter(custom_canvas_course_id=custom_canvas_course_id)
 
+    # If tool not configured and instructor logs in
     if ("Instructor" in user_type) and (data.count() == 0):
         itemgroupform = ItemGroupForm
-        return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform})
+        return render(request, 'maptoolapp/tool_instance_config_page1.html', {'request': request, 'itemgroupform':
+            itemgroupform})
+
+    # If any other user arrives at an unconfigured tool
     elif ("Instructor" not in user_type) and (data.count() == 0):
-        return render(request, 'maptoolapp/error.html', {'message': 'Error: The course instructor must configure this tool before it can be accessed.'})
+        return render(request, 'maptoolapp/error.html', {'message': 'Error: The course instructor must configure this '
+                                                                    'tool before it can be accessed.'})
+
+    # Where all users should go once the tool is configured
     else:
         return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
 
@@ -79,7 +85,7 @@ def main(request):
 @require_http_methods(['GET'])
 def displaymaps(request, data):
     """
-    The main method display the default view which is the map_view.
+    Set the id of the desired view in session and render map_view.html
     """
     request.session['itemgroup_session'] = data
     urls = Urls.objects.get(itemgroup=data)
@@ -87,13 +93,14 @@ def displaymaps(request, data):
     key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
     user_id = getparamfromsession(request, 'user_id')
     mypoints = Locations.objects.filter(user_id=user_id, itemgroup=data)
-    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
+    return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key, 'urls': urls, 'itemgroup':
+        itemgroup, 'mypoints': mypoints})
 
 @login_required()
 @require_http_methods(['GET'])
 def mapsview(request):
     """
-    Method to display map view if the itemgroup_session has already been set.
+    Render map_view.html from any page once a view is saved in session
     """
     user_id = getparamfromsession(request, 'user_id')
     itemgroup_session = request.session.get('itemgroup_session')
@@ -101,7 +108,8 @@ def mapsview(request):
     itemgroup = ItemGroup.objects.filter(id = itemgroup_session)
     key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
     mypoints = Locations.objects.filter(user_id=user_id, itemgroup=itemgroup_session)
-    return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
+    return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key, 'urls': urls, 'itemgroup':
+        itemgroup, 'mypoints': mypoints})
 
 @login_required()
 @require_http_methods(['GET'])
@@ -113,10 +121,9 @@ def add_location(request):
     resource_link_id = getparamfromsession(request, 'resource_link_id')
     user_id = getparamfromsession(request, 'user_id')
     if not resource_link_id or not user_id:
-        return render(request, 'maptoolapp/error.html', {'message': 'Unable to retrieve params from session. You might want to try reloading the tool.'})
-
+        return render(request, 'maptoolapp/error.html', {'message': 'Unable to retrieve params from session. '
+                                                                    'You might want to try reloading the tool.'})
     locationform = LocationForm
-
     return render(request, 'maptoolapp/add_location.html', {'request': request, 'locationform': locationform})
 
 @login_required()
@@ -138,7 +145,8 @@ def deleteview(request):
         key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
         user_id = getparamfromsession(request, 'user_id')
         mypoints = Locations.objects.filter(user_id=user_id, itemgroup=itemgroup_session)
-        return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
+        return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key, 'urls': urls,
+                                                            'itemgroup': itemgroup, 'mypoints': mypoints})
 
 @login_required()
 def addoreditlocation(request):
@@ -149,8 +157,8 @@ def addoreditlocation(request):
     lis_person_name_family = getparamfromsession(request, 'lis_person_name_family')
     lis_person_name_given = getparamfromsession(request, 'lis_person_name_given')
 
-    locationform = LocationForm(first_name=lis_person_name_given, last_name=lis_person_name_family, user_id=enter_user_id, data=request.POST)
-    itemgroup_session = request.session.get('itemgroup_session')
+    locationform = LocationForm(first_name=lis_person_name_given, last_name=lis_person_name_family,
+                                user_id=enter_user_id, data=request.POST)
 
     if locationform.is_valid():
         user_id = getparamfromsession(request, 'user_id')
@@ -166,7 +174,8 @@ def addoreditlocation(request):
         theform.datetime = datetime.datetime.now()
         theform.save()
         key = settings.MAP_TOOL_APP.get('google_map_api_v3_key')
-        return render(request, 'maptoolapp/map_view_2.html', {'request': request, 'api_key': key, 'urls':urls, 'itemgroup':itemgroup, 'mypoints':mypoints})
+        return render(request, 'maptoolapp/map_view.html', {'request': request, 'api_key': key, 'urls': urls,
+                                                            'itemgroup': itemgroup, 'mypoints': mypoints})
     else:
         return render(request, 'maptoolapp/add_location.html', {'request': request, 'locationform': locationform})
 
@@ -179,7 +188,8 @@ def toolinstanceconfig(request):
     custom_canvas_course_id = getparamfromsession(request, 'custom_canvas_course_id')
     resource_link_id = getparamfromsession(request, 'resource_link_id')
 
-    itemgroupform = ItemGroupForm(context_id=context_id, custom_canvas_course_id=custom_canvas_course_id, resource_link_id=resource_link_id, data=request.POST)
+    itemgroupform = ItemGroupForm(context_id=context_id, custom_canvas_course_id=custom_canvas_course_id,
+                                  resource_link_id=resource_link_id, data=request.POST)
     urlform = UrlForm(data=request.POST)
     if request.POST:
         if itemgroupform.is_valid():
@@ -190,7 +200,8 @@ def toolinstanceconfig(request):
             theitemform.save()
             request.session['itemgroup_session'] = theitemform.id
             render_url_form = UrlForm
-            return render(request, 'maptoolapp/tool_instance_config_2.html', {'request': request, 'urlform': render_url_form})
+            return render(request, 'maptoolapp/tool_instance_config_page2.html', {'request': request,
+                                                                                  'urlform': render_url_form})
         elif urlform.is_valid():
             itemgroupform = ItemGroup.objects.get(id=request.session.get('itemgroup_session'))
             theurlform = urlform.save(commit=False)
@@ -202,19 +213,12 @@ def toolinstanceconfig(request):
                 try:
                     urllib.urlopen(url_1)
                     latlong_1, zoom_1 = getlatlongandzoom(url_1)
-                    print latlong_1
-                    print('2') * 60
 
                     if latlong_1:
                         test_url_1 = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong_1+'&sensor=true'
                         data_1 = urllib2.urlopen(test_url_1).read()
                         json_data_1 = json.loads(data_1)
-                        print json_data_1
-                        print('1') * 60
-                    # else:
-                        # breakbreak
-                        # msg = "1 We were unable to parse lat/long coordinates from the given map urls. Try again"
-                        # raise forms.ValidationError(msg)
+
                 except UnicodeError:
                     msg = u"UnicodeError in map url"
                     self._errors["mapurl"] = self.error_class([msg])
@@ -230,9 +234,6 @@ def toolinstanceconfig(request):
 
             if url_2:
                 length = len(url_2)
-                print('@') * 100
-                print length
-                print('$') * 100
                 try:
                     urllib.urlopen(url_2)
                     latlong_2, zoom_2 = getlatlongandzoom(url_2)
@@ -241,10 +242,7 @@ def toolinstanceconfig(request):
                         test_url_2 = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong_2+'&sensor=true'
                         data_2 = urllib2.urlopen(test_url_2).read()
                         json_data_2 = json.loads(data_2)
-                    # else:
-                    #     break
-                        # msg = "2 We were unable to parse lat/long coordinates from the given map urls. Try again"
-                        # raise forms.ValidationError(msg)
+
                 except UnicodeError:
                     msg = u"UnicodeError in map url"
                     self._errors["mapurl"] = self.error_class([msg])
@@ -267,10 +265,6 @@ def toolinstanceconfig(request):
                         test_url_3 = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latlong_3+'&sensor=true'
                         data_3 = urllib2.urlopen(test_url_3).read()
                         json_data_3 = json.loads(data_3)
-                    # else:
-                    #     break
-                        # msg = "We were unable to parse lat/long coordinates from the given map urls. Try again"
-                        # raise forms.ValidationError(msg)
 
                 except UnicodeError:
                     msg = u"UnicodeError in map url"
@@ -295,14 +289,18 @@ def toolinstanceconfig(request):
                 ItemGroup.objects.get(id=itemgroup_session).delete()
 
             data = ItemGroup.objects.all()
-            return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request, 'data': data})
+            return render(request, 'maptoolapp/itemgroup_instance_selection.html', {'request': request,
+                                                                                    'data': data})
         else:
-            return render(request, 'maptoolapp/error.html', {'message': 'Error: please refresh and try configuring the tool again'})
+            return render(request, 'maptoolapp/error.html', {'message': 'Error: please refresh and try configuring '
+                                                                        'the tool again'})
     else:
         itemgroupform = ItemGroupForm
         data = ItemGroup.objects.filter(custom_canvas_course_id = custom_canvas_course_id)
         count = data.count()
-        return render(request, 'maptoolapp/tool_instance_config.html', {'request':request, 'itemgroupform':itemgroupform, 'data':data, 'count':count})
+        return render(request, 'maptoolapp/tool_instance_config_page1.html', {'request': request,
+                                                                              'itemgroupform': itemgroupform,
+                                                                              'data': data, 'count': count})
 @login_required()
 @require_http_methods(['GET'])
 def table_view(request):
@@ -322,19 +320,6 @@ def markers_class_xml(request):
     itemgroup_session = request.session.get('itemgroup_session')
     locationlist = Locations.objects.filter(itemgroup = itemgroup_session)
     return render_to_response('maptoolapp/markers.xml', {'data': locationlist}, context_instance=RequestContext(request))
-
-@login_required()
-@require_http_methods(['GET'])
-def header(request):
-    """
-    renders a header
-    """
-    user_type = getparamfromsession(request, 'roles')
-    if ("Instructor" in user_type):
-        role = 'instructor'
-    else:
-        role = 'student'
-    return render('maptoolapp/header.html', {'role': role})
 
 @require_http_methods(['GET'])
 def tool_config(request):
