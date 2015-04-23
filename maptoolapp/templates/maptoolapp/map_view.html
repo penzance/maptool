@@ -2,59 +2,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>LTI Map App</title>
+    <title>LTI Map App</title>
 
-{% block stylesheet %}
-<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
-<style type="text/css">
-    div#map, div#maplocal {
-        margin-bottom: 15px;
-        border: thin solid black;
-    }
-    div#data_url { display: none; }
-    div#content-div { margin-left: 10px; margin-top: 10px; }
-    .text-box { margin: 10px 10px; padding: 10px 10px;}
-</style>
-{% endblock %}
-
+    {%  include 'maptoolapp/_map_view_style.html' %}
+    {% block javascript %}
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&sensor=false"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="{% static "js/bootstrap.min.js" %}"></script>
+        <script src="{% static "js/maptool.js" %}"></script>
+    {% endblock %}
 </head>
+
 <body>
-
 {% block content %}
-<div id="content-div" class="row-fluid">
-<p class="text-box">
-        <a href="{% url 'maptoolapp:toolinstanceconfig' %}">Add or Edit a Map View</a>&#160;|&#160;
-        <a href="{% url 'maptoolapp:add_location' %}">Add Location</a>&#160;|&#160;
-        <a href="{% url 'maptoolapp:mapsview' %}">View Map</a>&#160;|&#160;
-        <a href="{% url 'maptoolapp:table_view' %}">View Table</a>
-</p>
+    <div id="content-div" class="row-fluid">
+    {% include 'maptoolapp/_header.html' %}
+    {% for rec in itemgroup %}
+        <div class="text-center"><h3>{{ rec.item_name }}</h3><h4>{{ rec.item_description }}</h4></div>
+    {% endfor %}
 
-    <!--TODO Do something with the javascript that displays these maps -->
-    <p class="help-block">World view:</p>
-    <div id="map" style="margin: 20px; width: 600px; height: 400px; ">&#160;</div>
-
-    <p class="help-block">Boston Area view:</p>
-    <div id="maplocal" style="margin: 20px; width: 600px; height: 550px;">&#160;</div>
-
+    {% if urls.url_1 %}
+        <div class="map-container">
+            <h3>{{ urls.description_1 }}</h3>
+            <div id="map_canvas_1" data-lat="{{ urls.generated_latitude_1 }}" data-long="{{ urls.generated_longitude_1 }}" data-zoom="{{ urls.zoom_1 }}" data-item_group_id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
+            <div class="my-points">
+                <p class="point-title">My Points</p>
+                <ul>
+                    {% for point in mypoints %}
+                        <li class="delete-point" data-id="{{ point.id }}">{{ point.title }} <a href="#"><i class="fa fa-trash"></i></a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    {% if urls.url_2 %}
+        <div class="map-container">
+            <h3>{{ urls.description_2 }}</h3>
+            <div id="map_canvas_2" data-lat="{{ urls.generated_latitude_2 }}" data-long="{{ urls.generated_longitude_2 }}" data-zoom="{{ urls.zoom_2 }}" data-item_group_id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
+        </div>
+    {% endif %}
+    {% if urls.url_3 %}
+        <div class="map-container">
+            <h3>{{ urls.description_3 }}</h3>
+            <div id="map_canvas_3" data-lat="{{ urls.generated_latitude_3 }}" data-long="{{ urls.generated_longitude_3 }}" data-zoom="{{ urls.zoom_3 }}" data-item_group_id="{{ urls.itemgroup_id }}" class="map-style">&#160;</div>
+        </div>
+        <table>
+            {% for key, val in lti_launch %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ val }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
     <div id="data_url">{% url 'maptoolapp:markers_class_xml' %}</div>
-
-    <table>
-        {% for key, val in lti_launch %}
-        <tr>
-            <td>{{ key }}</td>
-            <td>{{ val }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
 {% endblock %}
-
-{% block javascript %}
-<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-<script src="{% static "js/bootstrap.min.js" %}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&sensor=false"></script>
-<script src="{% static "js/maptool.js" %}"></script>
-{% endblock %}
-
 </body>
 </html>
