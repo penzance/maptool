@@ -14,9 +14,8 @@
 {% block content %}
     <div class="text-center">
         <h3>Select a tool instance to view:</h3><br>
-
         {% for rec in data %}
-            <a href="{% url 'maptoolapp:displaymaps' rec.id %}">{{rec.item_name }}</a>
+            <a href="{% url 'maptoolapp:displaymaps' rec.id %}"><i class="fa fa-map-marker fa-2x"></i> {{rec.item_name }}</a><br><br>
         {% endfor %}
 </div>
 {% endblock %}
