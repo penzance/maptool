@@ -4,11 +4,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Location</title>
+    <title>Tool Configuration</title>
     {% block stylsheet %}
         <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
         <style type="text/css">
-            #add_user_form { margin-left: 10px; margin-top: 10px; max-width: 80%;}
             legend { border-bottom: 0; }
         </style>
     {% endblock %}
@@ -16,10 +15,7 @@
 
 <body>
 {% block content %}
-    <div id="add_user_form">
-        {% include 'maptoolapp/_header.html' %}
-        {% crispy locationform %}
-    </div>
+    {% crispy urlform %}
 {% endblock %}
 </body>
 </html>
