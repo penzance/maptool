@@ -1,0 +1,10 @@
+{% load staticfiles %}
+
+<p class="text-box">
+    {% if 'Instructor' in request.session.LTI_LAUNCH.roles %}
+        <a href="{% url 'maptoolapp:toolinstanceconfig' %}">Add or Edit a Map View</a>&#160;|&#160;
+    {% endif %}
+        <a href="{% url 'maptoolapp:add_location' %}">Add Location</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:mapsview' %}">View Map</a>&#160;|&#160;
+        <a href="{% url 'maptoolapp:table_view' %}">View Table</a>
+</p>

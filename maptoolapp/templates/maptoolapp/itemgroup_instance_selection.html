@@ -1,0 +1,29 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Tool Instance</title>
+    {% block stylsheet %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    {% endblock %}
+</head>
+
+<body>
+{% block content %}
+    <div class="text-center">
+        <h3>Select a tool instance to view:</h3><br>
+        {% for rec in data %}
+            <a href="{% url 'maptoolapp:displaymaps' rec.id %}"><i class="fa fa-map-marker fa-2x"></i> {{rec.item_name }}</a><br><br>
+        {% endfor %}
+</div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/maptool.js" %}"></script>
+{% endblock %}
+</body>
+</html>
