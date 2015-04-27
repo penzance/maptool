@@ -58,4 +58,4 @@ target/
 secure.py
 *.sqlite3
 
-
+fixtures/
