@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <markers>
     {%  for rec in data %}
-    <marker lat="{{ rec.generated_latitude }}" lng="{{ rec.generated_longitude }}">
-        <content>
-            <strong>
-                {% if rec.first_name_permission %}{{ rec.first_name }}{% endif %} 
-                {% if rec.last_name_permission %}{{ rec.last_name  }}{% endif %}
-            </strong>
-            <br/>
-            {{ title }}, {{ info }}
-            <br />
-        </content>
-    </marker>
+        <marker lat="{{ rec.generated_latitude }}" lng="{{ rec.generated_longitude }}">
+            <content>
+                <strong>
+                    {{ rec.title }}
+                </strong>
+                <br/>
+                {{ rec.info }}
+                <br />
+                <i>Submitted by {{ rec.first_name }} {{ rec.last_name }}</i>
+            </content>
+        </marker>
     {% endfor %}
 </markers>

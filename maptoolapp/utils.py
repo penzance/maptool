@@ -17,6 +17,26 @@ def getlatlongfromurl(mapurl):
                 if len(latlonglist) == 3:
                     latlonglist.pop()
                     return ','.join(latlonglist)[1:]
+
+def getlatlongandzoom(mapurl):
+    """
+    try to parse the lat/long data from the mapurl
+    """
+    query = urlparse.urlparse(mapurl).query
+    query_dict = urlparse.parse_qs(query)
+    print '%s' % query
+    print '1'*50
+    if 'll' in query_dict:
+        return query_dict['ll'][0]
+    elif '@' in mapurl:
+        path = urlparse.urlparse(mapurl).path
+        for part in path.split('/'):
+            if '@' in part:
+                latlonglist = part.split(',')
+                if len(latlonglist) == 3:
+                    zoom = latlonglist.pop()
+                    zoom = zoom[:-1]
+                    return ','.join(latlonglist)[1:], zoom
     
 def validaterequiredltiparams(request):
     """
@@ -39,5 +59,4 @@ def check_resource_link_id(resource_link_id, request_resource_link_id):
     """
     if resource_link_id == request_resource_link_id:
         return True
-    return False    
-
+    return False

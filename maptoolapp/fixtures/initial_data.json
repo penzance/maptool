@@ -1,0 +1,298 @@
+[
+{
+    "pk": 36,
+    "fields": {
+        "address": "Harvard University, 25 Quincy Street, Cambridge, MA 02138, USA",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 65,
+        "locality": "Cambridge",
+        "first_name": "James",
+        "generated_latitude": "42.374374",
+        "last_name": "Curtin",
+        "latitude": "",
+        "method": "",
+        "generated_longitude": "-71.115488",
+        "longitude": "",
+        "region": "MA",
+        "datetime": "2015-04-25 18:18:24.624725",
+        "title": "Sever Hall",
+        "country": "US",
+        "mapurl": "https://www.google.com/maps/place/Sever+Hall,+Harvard+University,+Cambridge,+MA+02138/@42.374337,-71.1154783,19z/data=!3m1!4b1!4m2!3m1!1s0x89e37743869ba359:0x24a98fb38ab8533a",
+        "info": "H. H. Richardson, 1878"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 37,
+    "fields": {
+        "address": "Harvard University, 1 Church Street, Cambridge, MA 02138, USA",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 65,
+        "locality": "Cambridge",
+        "first_name": "James",
+        "generated_latitude": "42.374474",
+        "last_name": "Curtin",
+        "latitude": "",
+        "method": "",
+        "generated_longitude": "-71.117209",
+        "longitude": "",
+        "region": "MA",
+        "datetime": "2015-04-25 18:19:46.404404",
+        "title": "John Harvard Statue",
+        "country": "US",
+        "mapurl": "https://www.google.com/maps/place/John+Harvard+Statue/@42.374474,-71.117207,19z/data=!3m1!4b1!4m2!3m1!1s0x89e37743a663aed1:0x1b5299f9d1edac24",
+        "info": "Daniel Chester French, 1884"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 38,
+    "fields": {
+        "address": "",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 65,
+        "locality": "Cambridge",
+        "first_name": "James",
+        "generated_latitude": "42.375945",
+        "last_name": "Curtin",
+        "latitude": "",
+        "method": "",
+        "generated_longitude": "-71.114892",
+        "longitude": "",
+        "region": "MA",
+        "datetime": "2015-04-25 18:19:46.404404",
+        "title": "Memorial Hall",
+        "country": "US",
+        "mapurl": "",
+        "info": "Ware and Van Brunt, 1878"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 39,
+    "fields": {
+        "address": "Harvard University, 35 Harvard Way, Boston, MA 02163, USA",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 65,
+        "locality": "Boston",
+        "first_name": "James",
+        "generated_latitude": "42.3658878",
+        "last_name": "Curtin",
+        "latitude": "42.365916",
+        "method": "",
+        "generated_longitude": "-71.1221003",
+        "longitude": "-71.122106",
+        "region": "MA",
+        "datetime": "2015-04-25 18:38:01.582420",
+        "title": "Aldritch Hall",
+        "country": "US",
+        "mapurl": "",
+        "info": "Harvard Business School"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 40,
+    "fields": {
+        "address": "Harvard University, 65 Brattle Street, Cambridge, MA 02138, USA",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 65,
+        "locality": "Cambridge",
+        "first_name": "James",
+        "generated_latitude": "42.3751935",
+        "last_name": "Curtin",
+        "latitude": "42.375324",
+        "method": "",
+        "generated_longitude": "-71.1227193",
+        "longitude": "-71.122522",
+        "region": "MA",
+        "datetime": "2015-04-25 18:38:54.303231",
+        "title": "Radcliffe Institute",
+        "country": "US",
+        "mapurl": "",
+        "info": "Radcliffe Yard"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 41,
+    "fields": {
+        "address": "Harvard University, 24 Oxford Street, Cambridge, MA 02138, USA",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 65,
+        "locality": "Cambridge",
+        "first_name": "James",
+        "generated_latitude": "42.3781869",
+        "last_name": "Curtin",
+        "latitude": "42.378352",
+        "method": "",
+        "generated_longitude": "-71.1154884",
+        "longitude": "-71.115602",
+        "region": "MA",
+        "datetime": "2015-04-25 18:39:51.725217",
+        "title": "Harvard Museum of Natural History",
+        "country": "US",
+        "mapurl": "",
+        "info": "hmnh.harvard.edu"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 42,
+    "fields": {
+        "address": "Carrer de Mallorca, 373, 08013 Barcelona, Barcelona, Spain",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 66,
+        "locality": "Barcelona",
+        "first_name": "James",
+        "generated_latitude": "41.4017082",
+        "last_name": "Curtin",
+        "latitude": "41.401753",
+        "method": "",
+        "generated_longitude": "2.1728566",
+        "longitude": "2.173061",
+        "region": "CT",
+        "datetime": "2015-04-25 18:50:01.835222",
+        "title": "La Sagrada Familia",
+        "country": "ES",
+        "mapurl": "",
+        "info": "Antoni Gaud\u00ed"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 43,
+    "fields": {
+        "address": "Carretera de Vallvidrera al Tibidabo, 117, 08035 Barcelona, Barcelona, Spain",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 66,
+        "locality": "Barcelona",
+        "first_name": "James",
+        "generated_latitude": "41.4220716",
+        "last_name": "Curtin",
+        "latitude": "41.422053",
+        "method": "",
+        "generated_longitude": "2.1183845",
+        "longitude": "2.118706",
+        "region": "CT",
+        "datetime": "2015-04-25 20:09:48.441683",
+        "title": "Temple of the Sacred Heart of Jesus",
+        "country": "ES",
+        "mapurl": "",
+        "info": "Enric Sagnier, 1961"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 44,
+    "fields": {
+        "address": "Carrer de Santa Maria, 1, 08003 Barcelona, Barcelona, Spain",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 66,
+        "locality": "Barcelona",
+        "first_name": "James",
+        "generated_latitude": "41.3837671",
+        "last_name": "Curtin",
+        "latitude": "41.383870",
+        "method": "",
+        "generated_longitude": "2.182213",
+        "longitude": "2.182123",
+        "region": "CT",
+        "datetime": "2015-04-25 20:14:09.346952",
+        "title": "Basilica of Santa Maria del Mar",
+        "country": "ES",
+        "mapurl": "",
+        "info": "Completed 1383"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 45,
+    "fields": {
+        "address": "Carrer dels Comtes, 1, 08002 Barcelona, Barcelona, Spain",
+        "user_id": "a0ffc2d925bd5a78c2b4964059997c14d5ab0b70",
+        "itemgroup": 66,
+        "locality": "Barcelona",
+        "first_name": "James",
+        "generated_latitude": "41.3842203",
+        "last_name": "Curtin",
+        "latitude": "41.384121",
+        "method": "",
+        "generated_longitude": "2.1765412",
+        "longitude": "2.176316",
+        "region": "CT",
+        "datetime": "2015-04-25 20:16:50.585201",
+        "title": "Cathedral of the Holy Cross",
+        "country": "ES",
+        "mapurl": "",
+        "info": "Completed 1339"
+    },
+    "model": "maptoolapp.locations"
+},
+{
+    "pk": 25,
+    "fields": {
+        "generated_latitude_3": "42.366161",
+        "description_2": "Cambridge",
+        "url_3": "https://www.google.com/maps/@42.3659143,-71.1228887,17z",
+        "zoom_3": "17",
+        "generated_longitude_1": "-71.116114",
+        "url_1": "https://www.google.com/maps/@42.3743699,-71.1171273,18z",
+        "generated_longitude_3": "-71.1228896",
+        "generated_longitude_2": "-71.117364",
+        "generated_latitude_1": "42.374671",
+        "url_2": "https://www.google.com/maps/@42.3763257,-71.1172453,16z",
+        "description_3": "Harvard Business School",
+        "itemgroup": 65,
+        "generated_latitude_2": "42.3759886",
+        "zoom_1": "17",
+        "zoom_2": "16",
+        "description_1": "Harvard Yard"
+    },
+    "model": "maptoolapp.urls"
+},
+{
+    "pk": 26,
+    "fields": {
+        "generated_latitude_3": "",
+        "description_2": "",
+        "url_3": "",
+        "zoom_3": "",
+        "generated_longitude_1": "2.1728566",
+        "url_1": "https://www.google.com/maps/place/La+Sagrada+Familia/@41.401753,2.173061,12z",
+        "generated_longitude_3": "",
+        "generated_longitude_2": "",
+        "generated_latitude_1": "41.4017082",
+        "url_2": "",
+        "description_3": "",
+        "itemgroup": 66,
+        "generated_latitude_2": "",
+        "zoom_1": "12",
+        "zoom_2": "",
+        "description_1": "City of Barcelona"
+    },
+    "model": "maptoolapp.urls"
+},
+{
+    "pk": 65,
+    "fields": {
+        "context_id": "0e42ca50f0a675a7e6aa7823bb5e4a6a6658f6d0",
+        "item_name": "Harvard University",
+        "resource_link_id": "0e42ca50f0a675a7e6aa7823bb5e4a6a6658f6d0",
+        "item_description": "Buildings on the Harvard University Campus",
+        "custom_canvas_course_id": "73"
+    },
+    "model": "maptoolapp.itemgroup"
+},
+{
+    "pk": 66,
+    "fields": {
+        "context_id": "0e42ca50f0a675a7e6aa7823bb5e4a6a6658f6d0",
+        "item_name": "Cathedrals and Basilicas in Barcelona",
+        "resource_link_id": "0e42ca50f0a675a7e6aa7823bb5e4a6a6658f6d0",
+        "item_description": "Second largest city in Spain",
+        "custom_canvas_course_id": "73"
+    },
+    "model": "maptoolapp.itemgroup"
+}
+]
