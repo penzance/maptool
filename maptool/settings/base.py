@@ -148,3 +148,8 @@ MAP_TOOL_APP = {
         'user_id',
         ]
 }
+
+FIXTURE_DIRS = (
+    '/maptoolapp/fixtures/',
+)
+# CRISPY_FAIL_SILENTLY = not DEBUG

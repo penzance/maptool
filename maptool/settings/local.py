@@ -57,13 +57,9 @@ LOGGING = {
            'class': 'logging.handlers.WatchedFileHandler',
            'filename': 'request.log',
            'formatter': 'verbose',
-<<<<<<< HEAD
-       },    },
-=======
        },
+    },
 
-   },
->>>>>>> jamescurtin-master
    'loggers': {
        'django.request': {
            'handlers': ['request'],
@@ -75,11 +71,7 @@ LOGGING = {
            'level': 'DEBUG',
            'propagate': True,
        },
-<<<<<<< HEAD
-       'mapptoolapp': {
-=======
        'maptoolapp': {
->>>>>>> jamescurtin-master
            'handlers': ['console', 'logfile'],
            'level': 'DEBUG',
            'propagate': True,
@@ -100,8 +92,4 @@ LOGGING = {
            'propagate': True,
        },
    }
-<<<<<<< HEAD
-} 
-=======
 }
->>>>>>> jamescurtin-master

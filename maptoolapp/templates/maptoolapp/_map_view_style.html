@@ -1,0 +1,26 @@
+{% load staticfiles %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" media="screen"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <style>
+        .map-style {
+            width: 80%;
+            height: 400px;
+            display: inline-block;
+        }
+        .my-points {
+            display: inline-block;
+            position: absolute;
+        }
+        .map-container {
+            margin: 20px;
+        }
+        .point-title {
+            font-weight: bold;
+            font-size: 1em;
+            margin-left: 20px;
+        }
+        div#data_url { display: none; }
+    </style>
+{% endblock %}
