@@ -57,5 +57,5 @@ target/
 .vagrant/
 secure.py
 *.sqlite3
+fixtures/
 .DS_Store
-
