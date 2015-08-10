@@ -14,21 +14,21 @@ from os.path import abspath, basename, dirname, join, normpath
 from django.core.urlresolvers import reverse_lazy
 from sys import path
 from .secure import SECURE_SETTINGS
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = dirname(dirname(__file__))
 
 
 # Absolute filesystem path to the Django project config directory:
 # (this is the parent of the directory where this file resides,
 # since this file is now inside a 'settings' pacakge directory)
 DJANGO_PROJECT_CONFIG = dirname(dirname(abspath(__file__)))
-
+#print '%s' % DJANGO_PROJECT_CONFIG
 # Absolute filesystem path to the top-level project folder:
 # (this is one directory up from the project config directory)
 SITE_ROOT = dirname(DJANGO_PROJECT_CONFIG)
-
+#print '%s' % SITE_ROOT
 # Site name:
 SITE_NAME = basename(SITE_ROOT)
-
+#print '%s' % SITE_NAME
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 path.append(SITE_ROOT)
@@ -57,8 +57,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'djangular',
+    'django_auth_lti',
     'basic_lti_app',
     'maptoolapp',
+    'maps',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -125,15 +128,32 @@ STATICFILES_DIRS = (
 STATIC_ROOT = normpath(join(SITE_ROOT, 'http_static'))
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    #'django.template.loaders.eggs.Loader',
-)
+# TEMPLATE_LOADERS = (
+#     'django.template.loaders.filesystem.Loader',
+#     'django.template.loaders.app_directories.Loader',
+#     #'django.template.loaders.eggs.Loader',
+# )
+#
+# TEMPLATE_DIRS = (
+#     normpath(join(SITE_ROOT, 'templates')),
+# )
 
-TEMPLATE_DIRS = (
-    normpath(join(SITE_ROOT, 'templates')),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -142,6 +162,15 @@ LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('lti_oauth_credentials', None)
 
 # Tool specific settings
 MAP_TOOL_APP = {
+    'google_map_api_v3_key': SECURE_SETTINGS.get('google_map_api_v3_key'),
+    'required_lti_params' : [
+        'resource_link_id',
+        'user_id',
+        ]
+}
+
+# Tool specific settings
+MAPS = {
     'google_map_api_v3_key': SECURE_SETTINGS.get('google_map_api_v3_key'),
     'required_lti_params' : [
         'resource_link_id',
